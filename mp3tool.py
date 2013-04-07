@@ -181,6 +181,8 @@ def search_genres(folder):
 			out.write(item + "\n")
 		out.write("\n")
 	out.close()
+	filepath = os.path.join(os.getcwd(), "genres.txt")
+	println("[!] genre info written to %s" % (filepath))
 
 def main():
 	parser = argparse.ArgumentParser()
