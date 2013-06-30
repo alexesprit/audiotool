@@ -6,6 +6,8 @@ import glob
 import os
 import sys
 
+WINDOW_WIDTH = 120
+
 excepts = (
 	"In Flames",
 )
@@ -40,8 +42,8 @@ words = (
 )
 
 def println(output):
-	if len(output) > 79:
-		output = "%s..." % ("".join(output[0:76]))
+	if len(output) >= WINDOW_WIDTH:
+		output = "%s..." % ("".join(output[0:WINDOW_WIDTH-3]))
 	output = unicode(output, "cp1251")
 	try:
 		if os.name == "nt":
