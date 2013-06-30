@@ -65,7 +65,7 @@ def get_folders(folder, alldirs):
 	return result
 
 def get_mp3_files(folder):
-	println("Scanning %s" % (folder))
+	println("[!] Scanning %s" % (folder))
 
 	result = []
 	items = glob.glob(os.path.join(folder, "*.mp3"))
@@ -165,6 +165,7 @@ def search_genres(folder):
 	for item in folders:
 		mp3s = glob.glob(os.path.join(item, "*.mp3"))
 		if mp3s:
+			println("[!] Processing %s..." % (item))
 			path = mp3s[0]
 			try:
 				tag.link(path)
