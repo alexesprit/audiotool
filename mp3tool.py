@@ -1,11 +1,13 @@
 ﻿# coding: utf-8
 
 import argparse
-import eyed3
-import eyed3.id3
 import glob
 import os
 import sys
+
+import eyed3
+import eyed3.id3
+
 
 WINDOW_WIDTH = 120
 
@@ -15,12 +17,12 @@ excepts = (
 
 words = (
     "a",
-    "an", 
-    "the", 
+    "an",
+    "the",
 
     "and",
     "or",
-    
+
     "as",
     "at",
     "but",
@@ -34,7 +36,7 @@ words = (
     "to",
     "up",
     "via",
-    "yet", 
+    "yet",
 
     "am",
     "was",
@@ -42,9 +44,10 @@ words = (
     "are",
 )
 
+
 def println(output):
     if len(output) >= WINDOW_WIDTH:
-        output = "%s..." % (output[0:WINDOW_WIDTH-3])
+        output = "%s..." % output[0:WINDOW_WIDTH - 3]
     output = unicode(output, "cp1251")
     try:
         if os.name == "nt":
@@ -53,22 +56,24 @@ def println(output):
     except UnicodeEncodeError:
         pass
 
+
 def get_folders(folder, alldirs):
-    println("[!] Scanning: %s" % (folder))
+    println("[!] Scanning: %s" % folder)
 
     result = []
-    hasSubdirs = False
+    has_subdirs = False
     for item in os.listdir(folder):
         path = os.path.join(folder, item)
         if os.path.isdir(path):
-            hasSubdirs = True
+            has_subdirs = True
             result.extend(get_folders(path, alldirs))
-    if not hasSubdirs or alldirs:
+    if not has_subdirs or alldirs:
         result.append(folder)
     return result
 
+
 def get_mp3_files(folder):
-    println("[!] Scanning %s" % (folder))
+    println("[!] Scanning %s" % folder)
 
     result = []
     items = glob.glob(os.path.join(folder, "*.mp3"))
@@ -80,11 +85,12 @@ def get_mp3_files(folder):
             result.extend(get_mp3_files(path))
     return result
 
+
 def replace(string):
     elements = string.split(os.sep)
     new_elements = []
     matches = (
-        ":%s", "-%s", "_%s", "%s(", ".%s", "%s(" 
+        ":%s", "-%s", "_%s", "%s(", ".%s", "%s("
     )
     for e in elements:
         for word in words:
@@ -99,11 +105,11 @@ def replace(string):
                         skip = True
                         break
                 if not skip:
-                    new = " %s " % (word)
+                    new = " %s " % word
                     e = e.replace(old, new)
-            old = " %s" % (word.capitalize())
         new_elements.append(e)
     return os.sep.join(new_elements)
+
 
 def search_mp3(folder):
     files = get_mp3_files(folder)
@@ -114,7 +120,7 @@ def search_mp3(folder):
             old_artist = tag.artist
             old_album = tag.album
             old_title = tag.title
-            
+
             new_artist = replace(old_artist)
             new_album = replace(old_album)
             new_title = replace(old_title)
@@ -131,13 +137,14 @@ def search_mp3(folder):
                 changed = True
             if changed:
                 tag.save()
-                println("[!] file updated: %s" % (f))
+                println("[!] file updated: %s" % f)
             new_fname = replace(f)
             if f != new_fname:
                 os.rename(f, new_fname)
-                println("[!] file renamed: %s" % (f))
-        except:
-            println("[search_mp3] error: set tag for %s" % (f))
+                println("[!] file renamed: %s" % f)
+        except IOError:
+            println("[search_mp3] error: set tag for %s" % f)
+
 
 def search_folders(folder):
     folders = get_folders(folder, False)
@@ -147,7 +154,8 @@ def search_folders(folder):
         new_path = replace(old_path)
         if old_path != new_path:
             os.rename(old_path, new_path)
-            println("[!] folder renamed: %s" % (old_path))
+            println("[!] folder renamed: %s" % old_path)
+
 
 def search_uncovered(folder):
     folders = get_folders(folder, False)
@@ -158,7 +166,8 @@ def search_uncovered(folder):
             if ext in (".jpg", ".png", ".jpeg"):
                 covered = True
         if not covered:
-            println("[!] Uncovered: %s" % (item))
+            println("[!] Uncovered: %s" % item)
+
 
 def search_genres(folder):
     genres = {}
@@ -166,7 +175,7 @@ def search_genres(folder):
     for item in folders:
         mp3s = glob.glob(os.path.join(item, "*.mp3"))
         if mp3s:
-            println("[!] Processing %s..." % (item))
+            println("[!] Processing %s..." % item)
             path = mp3s[0]
             try:
                 tag = eyed3.load(path, eyed3.id3.ID3_V2_3).tag
@@ -174,8 +183,8 @@ def search_genres(folder):
                 if genre not in genres:
                     genres[genre] = []
                 genres[genre].append(item)
-            except:
-                println("[search_genres] error: get tag from %s" % (path))
+            except IOError:
+                println("[search_genres] error: get tag from %s" % path)
     out = open("genres.txt", "w")
     for genre in genres:
         out.write(genre + ":\n")
@@ -184,7 +193,8 @@ def search_genres(folder):
         out.write("\n")
     out.close()
     filepath = os.path.join(os.getcwd(), "genres.txt")
-    println("[!] genre info written to %s" % (filepath))
+    println("[!] genre info written to %s" % filepath)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -208,6 +218,7 @@ def main():
     elif args.covers:
         search_uncovered(args.folder)
     return 0
+
 
 if "__main__" == __name__:
     sys.exit(main())
