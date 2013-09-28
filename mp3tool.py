@@ -1,7 +1,8 @@
 ﻿# coding: utf-8
 
 import argparse
-import eyeD3
+import eyed3
+import eyed3.id3
 import glob
 import os
 import sys
@@ -43,7 +44,7 @@ words = (
 
 def println(output):
 	if len(output) >= WINDOW_WIDTH:
-		output = "%s..." % ("".join(output[0:WINDOW_WIDTH-3]))
+		output = "%s..." % (output[0:WINDOW_WIDTH-3])
 	output = unicode(output, "cp1251")
 	try:
 		if os.name == "nt":
@@ -105,15 +106,14 @@ def replace(string):
 	return os.sep.join(new_elements)
 
 def search_mp3(folder):
-	tag = eyeD3.Tag()
 	files = get_mp3_files(folder)
 	for f in files:
 		try:
-			tag.link(f)
+			tag = eyed3.load(f, eyed3.id3.ID3_V2_3).tag
 
-			old_artist = tag.getArtist()
-			old_album = tag.getAlbum()
-			old_title = tag.getTitle()
+			old_artist = tag.artist
+			old_album = tag.album
+			old_title = tag.title
 			
 			new_artist = replace(old_artist)
 			new_album = replace(old_album)
@@ -121,16 +121,16 @@ def search_mp3(folder):
 
 			changed = False
 			if old_artist != new_artist:
-				tag.setArtist(new_artist)
+				tag.artist = new_artist
 				changed = True
 			if old_album != new_album:
-				tag.setAlbum(new_album)
+				tag.album = new_album
 				changed = True
 			if old_title != new_title:
-				tag.setTitle(new_title)
+				tag.title = new_title
 				changed = True
 			if changed:
-				tag.update(eyeD3.ID3_V2_3)
+				tag.save()
 				println("[!] file updated: %s" % (f))
 			new_fname = replace(f)
 			if f != new_fname:
