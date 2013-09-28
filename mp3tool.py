@@ -2,6 +2,7 @@
 
 import argparse
 import eyed3
+import eyed3.id3
 import glob
 import os
 import sys
@@ -160,7 +161,6 @@ def search_uncovered(folder):
             println("[!] Uncovered: %s" % (item))
 
 def search_genres(folder):
-    tag = eyeD3.Tag()
     genres = {}
     folders = get_folders(folder, False)
     for item in folders:
@@ -169,8 +169,8 @@ def search_genres(folder):
             println("[!] Processing %s..." % (item))
             path = mp3s[0]
             try:
-                tag.link(path)
-                genre = tag.getGenre().getName()
+                tag = eyed3.load(path, eyed3.id3.ID3_V2_3).tag
+                genre = tag.genre.name
                 if genre not in genres:
                     genres[genre] = []
                 genres[genre].append(item)
