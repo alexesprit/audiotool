@@ -117,7 +117,7 @@ def search_mp3(folder):
             if f != new_fname:
                 os.rename(f, new_fname)
                 println('[!] file renamed: %s' % f)
-        except IOError:
+        except (IOError, eyed3.id3.TagException):
             println('[search_mp3] error: set tag for %s' % f)
 
 
