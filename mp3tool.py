@@ -5,11 +5,10 @@ import glob
 import os
 import sys
 
+import terminal
 import eyed3
 import eyed3.id3
 
-
-WINDOW_WIDTH = 120
 
 excepts = (
     "In Flames",
@@ -46,9 +45,10 @@ words = (
 
 
 def println(output):
-    if len(output) >= WINDOW_WIDTH:
-        output = "%s..." % output[0:WINDOW_WIDTH - 3]
-    output = unicode(output, "cp1251")
+    window_width = terminal.get_terminal_width()
+    if len(output) >= window_width:
+        output = '%s...' % output[0:window_width - 1]
+    output = unicode(output, 'cp1251')
     try:
         if os.name == "nt":
             output = output.encode("cp866")
