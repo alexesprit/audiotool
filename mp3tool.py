@@ -58,32 +58,23 @@ def println(output):
 
 
 def get_folders(folder, alldirs):
-    println("[!] Scanning: %s" % folder)
-
-    result = []
-    has_subdirs = False
-    for item in os.listdir(folder):
-        path = os.path.join(folder, item)
-        if os.path.isdir(path):
-            has_subdirs = True
-            result.extend(get_folders(path, alldirs))
-    if not has_subdirs or alldirs:
-        result.append(folder)
-    return result
+    for root, dirs, files in os.walk(folder):
+        println("[!] Scanning: %s" % root)
+        if not files and not alldirs:
+            continue
+        if not dirs:
+            yield root
 
 
 def get_mp3_files(folder):
-    println("[!] Scanning %s" % folder)
+    def is_mp3(path):
+        return os.path.splitext(path)[1] == '.mp3'
 
-    result = []
-    items = glob.glob(os.path.join(folder, "*.mp3"))
-    if items:
-        result.extend(items)
-    for item in os.listdir(folder):
-        path = os.path.join(folder, item)
-        if os.path.isdir(path):
-            result.extend(get_mp3_files(path))
-    return result
+    for root, dirs, files in os.walk(folder):
+        println("[!] Scanning %s" % root)
+        for f in files:
+            if is_mp3(f):
+                yield os.path.join(root, f)
 
 
 def replace(string):
@@ -175,7 +166,6 @@ def search_genres(folder):
     for item in folders:
         mp3s = glob.glob(os.path.join(item, "*.mp3"))
         if mp3s:
-            println("[!] Processing %s..." % item)
             path = mp3s[0]
             try:
                 tag = eyed3.load(path, eyed3.id3.ID3_V2_3).tag
