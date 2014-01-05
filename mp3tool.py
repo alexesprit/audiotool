@@ -169,10 +169,13 @@ def search_genres(folder):
             path = mp3s[0]
             try:
                 tag = eyed3.load(path, eyed3.id3.ID3_V2_3).tag
-                genre = tag.genre.name
-                if genre not in genres:
-                    genres[genre] = []
-                genres[genre].append(item)
+                if tag.genre:
+                    genre = tag.genre.name
+                    if genre not in genres:
+                        genres[genre] = []
+                    genres[genre].append(item)
+                else:
+                    println("[search_genres] error: not genre in %s" % path)
             except IOError:
                 println("[search_genres] error: get tag from %s" % path)
     out = open("genres.txt", "w")
