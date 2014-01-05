@@ -11,47 +11,31 @@ import eyed3.id3
 
 
 excepts = (
-    "In Flames",
+    'In Flames',
 )
 
 words = (
-    "a",
-    "an",
-    "the",
+    'a', 'an', 'the',
 
-    "and",
-    "or",
+    'and', 'or',
 
-    "as",
-    "at",
-    "but",
-    "by",
-    "for",
-    "in",
-    "of",
-    "off",
-    "on",
-    "per",
-    "to",
-    "up",
-    "via",
-    "yet",
+    'as', 'at', 'but', 'by',
+    'for', 'in', 'of', 'off',
+    'on', 'per', 'to', 'up',
+    'via', 'yet',
 
-    "am",
-    "was",
-    "is",
-    "are",
+    'am', 'was', 'is', 'are',
 )
 
 
 def println(output):
     window_width = terminal.get_terminal_width()
     if len(output) >= window_width:
-        output = '%s...' % output[0:window_width - 1]
+        output = '%s…' % output[0:window_width - 1]
     output = unicode(output, 'cp1251')
     try:
-        if os.name == "nt":
-            output = output.encode("cp866")
+        if os.name == 'nt':
+            output = output.encode('cp866')
         print output
     except UnicodeEncodeError:
         pass
@@ -59,7 +43,7 @@ def println(output):
 
 def get_folders(folder, alldirs):
     for root, dirs, files in os.walk(folder):
-        println("[!] Scanning: %s" % root)
+        println('[!] Scanning: %s' % root)
         if not files and not alldirs:
             continue
         if not dirs:
@@ -71,7 +55,7 @@ def get_mp3_files(folder):
         return os.path.splitext(path)[1] == '.mp3'
 
     for root, dirs, files in os.walk(folder):
-        println("[!] Scanning %s" % root)
+        println('[!] Scanning %s' % root)
         for f in files:
             if is_mp3(f):
                 yield os.path.join(root, f)
@@ -81,14 +65,14 @@ def replace(string):
     elements = string.split(os.sep)
     new_elements = []
     matches = (
-        ":%s", "-%s", "_%s", "%s(", ".%s", "%s("
+        ':%s', '-%s', '_%s', '%s(', '.%s', '%s('
     )
     for e in elements:
         for word in words:
             for exc in excepts:
                 if word in exc.lower():
                     continue
-            old = " %s " % (word.capitalize())
+            old = ' %s ' % (word.capitalize())
             if e.count(old):
                 skip = False
                 for m in matches:
@@ -96,7 +80,7 @@ def replace(string):
                         skip = True
                         break
                 if not skip:
-                    new = " %s " % word
+                    new = ' %s ' % word
                     e = e.replace(old, new)
         new_elements.append(e)
     return os.sep.join(new_elements)
@@ -128,13 +112,13 @@ def search_mp3(folder):
                 changed = True
             if changed:
                 tag.save()
-                println("[!] file updated: %s" % f)
+                println('[!] file updated: %s' % f)
             new_fname = replace(f)
             if f != new_fname:
                 os.rename(f, new_fname)
-                println("[!] file renamed: %s" % f)
+                println('[!] file renamed: %s' % f)
         except IOError:
-            println("[search_mp3] error: set tag for %s" % f)
+            println('[search_mp3] error: set tag for %s' % f)
 
 
 def search_folders(folder):
@@ -145,7 +129,7 @@ def search_folders(folder):
         new_path = replace(old_path)
         if old_path != new_path:
             os.rename(old_path, new_path)
-            println("[!] folder renamed: %s" % old_path)
+            println('[!] folder renamed: %s' % old_path)
 
 
 def search_uncovered(folder):
@@ -154,17 +138,17 @@ def search_uncovered(folder):
         covered = False
         for subitem in os.listdir(item):
             ext = os.path.splitext(subitem)[1]
-            if ext in (".jpg", ".png", ".jpeg"):
+            if ext in ('.jpg', '.png', '.jpeg'):
                 covered = True
         if not covered:
-            println("[!] Uncovered: %s" % item)
+            println('[!] Uncovered: %s' % item)
 
 
 def search_genres(folder):
     genres = {}
     folders = get_folders(folder, False)
     for item in folders:
-        mp3s = glob.glob(os.path.join(item, "*.mp3"))
+        mp3s = glob.glob(os.path.join(item, '*.mp3'))
         if mp3s:
             path = mp3s[0]
             try:
@@ -175,18 +159,18 @@ def search_genres(folder):
                         genres[genre] = []
                     genres[genre].append(item)
                 else:
-                    println("[search_genres] error: not genre in %s" % path)
+                    println('[search_genres] error: not genre in %s' % path)
             except IOError:
-                println("[search_genres] error: get tag from %s" % path)
-    out = open("genres.txt", "w")
+                println('[search_genres] error: get tag from %s' % path)
+    out = open('genres.txt', 'w')
     for genre in genres:
-        out.write(genre + ":\n")
+        out.write(genre + ':\n')
         for item in genres[genre]:
-            out.write(item + "\n")
-        out.write("\n")
+            out.write(item + '\n')
+        out.write('\n')
     out.close()
-    filepath = os.path.join(os.getcwd(), "genres.txt")
-    println("[!] genre info written to %s" % filepath)
+    filepath = os.path.join(os.getcwd(), 'genres.txt')
+    println('[!] genre info written to %s' % filepath)
 
 
 def main():
@@ -206,12 +190,10 @@ def main():
         search_folders(args.folder)
     elif args.genres:
         search_genres(args.folder)
-    #elif args.unusual:
-    #    search_unusual(args.folder)
     elif args.covers:
         search_uncovered(args.folder)
     return 0
 
 
-if "__main__" == __name__:
+if '__main__' == __name__:
     sys.exit(main())
