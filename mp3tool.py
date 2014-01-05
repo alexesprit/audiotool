@@ -62,6 +62,8 @@ def get_mp3_files(folder):
 
 
 def replace(string):
+    if not string:
+        return None
     elements = string.split(os.sep)
     new_elements = []
     matches = (
