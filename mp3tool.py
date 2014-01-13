@@ -194,7 +194,7 @@ def collect_genres(directory):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-F', dest='directory', type=str, required=True, help='Path to scanning')
+    parser.add_argument(dest='directory', help='Path to scanning')
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-g', dest='genres', action='store_true', help='Collect genres')
     group.add_argument('-r', dest='rename', action='store_true', help='Rename directories')
