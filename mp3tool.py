@@ -23,6 +23,15 @@ WORDS_TO_REPLACE = (
 )
 
 
+def keyboard_interrupt(function):
+    def wrapper(*args):
+        try:
+            function(*args)
+        except KeyboardInterrupt:
+            println('Cancelled')
+    return wrapper
+
+
 def println(output):
     window_width = terminal.get_terminal_width()
     if len(output) >= window_width:
@@ -83,6 +92,7 @@ def normalize_string(string):
     return string
 
 
+@keyboard_interrupt
 def fix_mp3_tags(directory):
     for f in gen_mp3_files(directory):
         try:
@@ -117,6 +127,7 @@ def fix_mp3_tags(directory):
             println('[search_mp3] error: set tag for %s' % f)
 
 
+@keyboard_interrupt
 def rename_dirs(directory):
     renamed_dirs = []
     for item in gen_directories(directory, True):
@@ -133,6 +144,7 @@ def rename_dirs(directory):
         println('[!] Nothing is renamed')
 
 
+@keyboard_interrupt
 def search_uncovered_dirs(directory):
     uncovered_dirs = []
     for item in gen_directories(directory, False):
@@ -151,6 +163,7 @@ def search_uncovered_dirs(directory):
         println('[!] All directories have covers')
 
 
+@keyboard_interrupt
 def collect_genres(directory):
     genres = {}
     for item in gen_directories(directory, False):
