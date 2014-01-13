@@ -182,7 +182,6 @@ def main():
     group.add_argument('-g', dest='genres', action='store_true', help='Collect genres')
     group.add_argument('-r', dest='rename', action='store_true', help='Rename directories')
     group.add_argument('-t', dest='tags', action='store_true', help='Fix ID3 tags.')
-    group.add_argument('-u', dest='unusual', action='store_true', help='Search unusual ID3 attrs.')
     group.add_argument('-c', dest='covers', action='store_true', help='Search uncovered folders.')
     args = parser.parse_args()
 
