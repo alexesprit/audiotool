@@ -123,7 +123,7 @@ def search_mp3(folder):
 
 
 def search_folders(folder):
-    folders = get_folders(folder, False)
+    folders = get_folders(folder, True)
     for item in folders:
         old_path = item
         new_path = replace(old_path)
