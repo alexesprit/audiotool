@@ -10,7 +10,7 @@ import eyed3
 import eyed3.id3
 
 
-excepts = (
+EXCEPTIONS = (
     'In Flames',
 )
 
@@ -41,26 +41,26 @@ def println(output):
         pass
 
 
-def get_folders(folder, alldirs):
-    for root, dirs, files in os.walk(folder):
+def gen_directories(directory, alldirs):
+    for root, dirs, files in os.walk(directory):
         if not files and not alldirs:
             continue
         println('[!] Scanning: %s' % root)
         yield root
 
 
-def get_mp3_files(folder):
+def gen_mp3_files(directory):
     def is_mp3(path):
         return os.path.splitext(path)[1] == '.mp3'
 
-    for root, dirs, files in os.walk(folder):
+    for root, dirs, files in os.walk(directory):
         println('[!] Scanning %s' % root)
         for f in files:
             if is_mp3(f):
                 yield os.path.join(root, f)
 
 
-def replace(string):
+def normalize_string(string):
     if not string:
         return None
     elements = string.split(os.sep)
@@ -70,7 +70,7 @@ def replace(string):
     )
     for e in elements:
         for word in words:
-            for exc in excepts:
+            for exc in EXCEPTIONS:
                 if word in exc.lower():
                     continue
             old = ' %s ' % (word.capitalize())
@@ -87,9 +87,8 @@ def replace(string):
     return os.sep.join(new_elements)
 
 
-def search_mp3(folder):
-    files = get_mp3_files(folder)
-    for f in files:
+def fix_mp3_tags(directory):
+    for f in gen_mp3_files(directory):
         try:
             tag = eyed3.load(f, eyed3.id3.ID3_V2_3).tag
 
@@ -97,9 +96,9 @@ def search_mp3(folder):
             old_album = tag.album
             old_title = tag.title
 
-            new_artist = replace(old_artist)
-            new_album = replace(old_album)
-            new_title = replace(old_title)
+            new_artist = normalize_string(old_artist)
+            new_album = normalize_string(old_album)
+            new_title = normalize_string(old_title)
 
             changed = False
             if old_artist != new_artist:
@@ -114,7 +113,7 @@ def search_mp3(folder):
             if changed:
                 tag.save()
                 println('[!] file updated: %s' % f)
-            new_fname = replace(f)
+            new_fname = normalize_string(f)
             if f != new_fname:
                 os.rename(f, new_fname)
                 println('[!] file renamed: %s' % f)
@@ -122,12 +121,11 @@ def search_mp3(folder):
             println('[search_mp3] error: set tag for %s' % f)
 
 
-def search_folders(folder):
-    folders = get_folders(folder, True)
+def rename_dirs(directory):
     renamed_dirs = []
-    for item in folders:
+    for item in gen_directories(directory, True):
         old_path = item
-        new_path = replace(old_path)
+        new_path = normalize_string(old_path)
         if old_path != new_path:
             os.rename(old_path, new_path)
             renamed_dirs.append(old_path)
@@ -139,10 +137,9 @@ def search_folders(folder):
         println('[!] Nothing is renamed')
 
 
-def search_uncovered(folder):
-    folders = get_folders(folder, False)
+def search_uncovered_dirs(directory):
     uncovered_dirs = []
-    for item in folders:
+    for item in gen_directories(directory, False):
         covered = False
         for subitem in os.listdir(item):
             ext = os.path.splitext(subitem)[1]
@@ -158,10 +155,9 @@ def search_uncovered(folder):
         println('[!] All directories have covers')
 
 
-def search_genres(folder):
+def collect_genres(directory):
     genres = {}
-    folders = get_folders(folder, False)
-    for item in folders:
+    for item in gen_directories(directory, False):
         mp3s = glob.glob(os.path.join(item, '*.mp3'))
         if mp3s:
             path = mp3s[0]
@@ -189,7 +185,7 @@ def search_genres(folder):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-F', dest='folder', type=str, required=True, help='Path to scanning')
+    parser.add_argument('-F', dest='directory', type=str, required=True, help='Path to scanning')
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-g', dest='genres', action='store_true', help='Collect genres')
     group.add_argument('-r', dest='rename', action='store_true', help='Rename directories')
@@ -198,13 +194,13 @@ def main():
     args = parser.parse_args()
 
     if args.tags:
-        search_mp3(args.folder)
+        fix_mp3_tags(args.directory)
     elif args.rename:
-        search_folders(args.folder)
+        rename_dirs(args.directory)
     elif args.genres:
-        search_genres(args.folder)
+        collect_genres(args.directory)
     elif args.covers:
-        search_uncovered(args.folder)
+        search_uncovered_dirs(args.directory)
     return 0
 
 
