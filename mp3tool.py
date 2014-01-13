@@ -1,5 +1,4 @@
 ﻿# coding: utf-8
-
 import argparse
 import glob
 import os
@@ -10,11 +9,7 @@ import eyed3
 import eyed3.id3
 
 
-EXCEPTIONS = (
-    'In Flames',
-)
-
-words = (
+WORDS_TO_REPLACE = (
     'a', 'an', 'the',
 
     'and', 'or',
@@ -60,31 +55,32 @@ def gen_mp3_files(directory):
                 yield os.path.join(root, f)
 
 
+def normalize_path(path):
+    elements = path.split(os.sep)
+    for i in xrange(0, len(elements)):
+        elements[i] = normalize_string(elements[i])
+    return os.sep.join(elements)
+
+
 def normalize_string(string):
     if not string:
         return None
-    elements = string.split(os.sep)
-    new_elements = []
     matches = (
-        ':%s', '-%s', '_%s', '%s(', '.%s', '%s('
+        ': %s', '- %s', '_ %s', '%s (', '. %s'
     )
-    for e in elements:
-        for word in words:
-            for exc in EXCEPTIONS:
-                if word in exc.lower():
-                    continue
-            old = ' %s ' % (word.capitalize())
-            if e.count(old):
-                skip = False
-                for m in matches:
-                    if e.count(m % old):
-                        skip = True
-                        break
-                if not skip:
-                    new = ' %s ' % word
-                    e = e.replace(old, new)
-        new_elements.append(e)
-    return os.sep.join(new_elements)
+    for word in WORDS_TO_REPLACE:
+        old_word = word.capitalize()
+        old_repl = ' %s ' % old_word
+        if string.count(old_repl):
+            skip = False
+            for m in matches:
+                if string.count(m % old_word):
+                    skip = True
+                    break
+            if not skip:
+                new_repl = ' %s ' % word
+                string = string.replace(old_repl, new_repl)
+    return string
 
 
 def fix_mp3_tags(directory):
@@ -113,7 +109,7 @@ def fix_mp3_tags(directory):
             if changed:
                 tag.save()
                 println('[!] file updated: %s' % f)
-            new_fname = normalize_string(f)
+            new_fname = normalize_path(f)
             if f != new_fname:
                 os.rename(f, new_fname)
                 println('[!] file renamed: %s' % f)
@@ -125,7 +121,7 @@ def rename_dirs(directory):
     renamed_dirs = []
     for item in gen_directories(directory, True):
         old_path = item
-        new_path = normalize_string(old_path)
+        new_path = normalize_path(old_path)
         if old_path != new_path:
             os.rename(old_path, new_path)
             renamed_dirs.append(old_path)
