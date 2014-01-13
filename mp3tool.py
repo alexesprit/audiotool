@@ -124,16 +124,24 @@ def search_mp3(folder):
 
 def search_folders(folder):
     folders = get_folders(folder, True)
+    renamed_dirs = []
     for item in folders:
         old_path = item
         new_path = replace(old_path)
         if old_path != new_path:
             os.rename(old_path, new_path)
-            println('[!] folder renamed: %s' % old_path)
+            renamed_dirs.append(old_path)
+    println('')
+    if renamed_dirs:
+        for path in renamed_dirs:
+            println('[!] folder renamed: %s' % path)
+    else:
+        println('[!] Nothing is renamed')
 
 
 def search_uncovered(folder):
     folders = get_folders(folder, False)
+    uncovered_dirs = []
     for item in folders:
         covered = False
         for subitem in os.listdir(item):
@@ -141,7 +149,13 @@ def search_uncovered(folder):
             if ext in ('.jpg', '.png', '.jpeg'):
                 covered = True
         if not covered:
-            println('[!] Uncovered: %s' % item)
+            uncovered_dirs.append(item)
+    println('')
+    if uncovered_dirs:
+        for path in uncovered_dirs:
+            println('[!] Uncovered: %s' % path)
+    else:
+        println('[!] All directories have covers')
 
 
 def search_genres(folder):
