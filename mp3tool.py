@@ -196,10 +196,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(dest='directory', help='Path to scanning')
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-g', dest='genres', action='store_true', help='Collect genres')
-    group.add_argument('-r', dest='rename', action='store_true', help='Rename directories')
-    group.add_argument('-t', dest='tags', action='store_true', help='Fix ID3 tags.')
-    group.add_argument('-c', dest='covers', action='store_true', help='Search uncovered folders.')
+    group.add_argument('-g', dest='genres', action='store_true', help='collect genres')
+    group.add_argument('-r', dest='rename', action='store_true', help='rename directories')
+    group.add_argument('-t', dest='tags', action='store_true', help='fix ID3 tags')
+    group.add_argument('-c', dest='covers', action='store_true', help='search uncovered folders')
     args = parser.parse_args()
 
     if args.tags:
