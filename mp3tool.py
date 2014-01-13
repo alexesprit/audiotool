@@ -43,11 +43,10 @@ def println(output):
 
 def get_folders(folder, alldirs):
     for root, dirs, files in os.walk(folder):
-        println('[!] Scanning: %s' % root)
         if not files and not alldirs:
             continue
-        if not dirs:
-            yield root
+        println('[!] Scanning: %s' % root)
+        yield root
 
 
 def get_mp3_files(folder):
