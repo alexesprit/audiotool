@@ -21,6 +21,8 @@ WORDS_TO_REPLACE = (
     'am', 'was', 'is', 'are',
 )
 
+GENRE_OUT_FILENAME = 'genres.txt'
+
 
 def keyboard_interrupt(function):
     def wrapper(*args):
@@ -180,13 +182,13 @@ def collect_genres(directory):
             if genre not in genres:
                 genres[genre] = []
             genres[genre].append(item)
-    out = open('genres.txt', 'w')
-    for genre in genres:
-        out.write(genre + ':\n')
-        for item in genres[genre]:
-            out.write(item + '\n')
-        out.write('\n')
-    out.close()
+
+    with open(GENRE_OUT_FILENAME, 'w') as f:
+        for genre in genres:
+            f.write(genre + ':\n')
+            for item in genres[genre]:
+                f.write(item + '\n')
+            f.write('\n')
     filepath = os.path.join(os.getcwd(), 'genres.txt')
     println('[!] genre info written to %s' % filepath)
 
