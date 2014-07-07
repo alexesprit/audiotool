@@ -73,7 +73,7 @@ def normalize_string(string):
     if not string:
         return None
     matches = (
-        ': %s', '- %s', '_ %s', '%s (', '. %s'
+        ': %s', '- %s', '_ %s', '%s (', '. %s', '%s -'
     )
     for word in WORDS_TO_REPLACE:
         old_word = word.capitalize()
