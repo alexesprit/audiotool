@@ -54,15 +54,12 @@ def gen_directories(directory, alldirs):
         yield root
 
 
-def gen_mp3_files(directory):
-    def is_mp3(path):
-        return os.path.splitext(path)[1] == '.mp3'
-
+def gen_audio_files(directory):
     for root, dirs, files in os.walk(directory):
         println('[!] Scanning %s' % root)
-        for f in files:
-            if is_mp3(f):
-                yield os.path.join(root, f)
+        for filename in files:
+            if TagWrapper.is_supported(filename):
+                yield os.path.join(root, filename)
 
 
 def normalize_path(path):
@@ -95,7 +92,7 @@ def normalize_string(string):
 
 @keyboard_interrupt
 def fix_audio_tags(directory):
-    for filename in gen_mp3_files(directory):
+    for filename in gen_audio_files(directory):
         try:
             tag = TagWrapper(filename)
         except IOError:
