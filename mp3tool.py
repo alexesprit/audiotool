@@ -33,7 +33,7 @@ def keyboard_interrupt(function):
 
 
 def println(output):
-    window_width = terminal.get_terminal_width()
+    window_width = terminal.get_terminal_size()[0]
     if len(output) >= window_width:
         output = '%s…' % output[0:window_width - 1]
     output = unicode(output, 'cp1251')
