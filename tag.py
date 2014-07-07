@@ -24,7 +24,10 @@ class _MP3Wrapper(_AbstractWrapper):
         self.audio = EasyID3(filename)
 
     def __getitem__(self, item):
-        return self.audio[item][0]
+        try:
+            return self.audio[item][0]
+        except KeyError:
+            return None
 
     def __setitem__(self, item, value):
         self.audio[item] = [value]
@@ -39,7 +42,10 @@ class _MP4Wrapper(_AbstractWrapper):
         self.audio = EasyMP4(filename)
 
     def __getitem__(self, item):
-        return self.audio[item][0]
+        try:
+            return self.audio[item][0]
+        except KeyError:
+            return None
 
     def __setitem__(self, item, value):
         self.audio[item] = [value]

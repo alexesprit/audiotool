@@ -31,10 +31,11 @@ def normalize_path(path):
 
 
 def normalize_string(string):
-    for word in WORDS_TO_REPLACE:
-        pattern = _gen_regexp_pattern(word.capitalize())
-        replace = ' %s ' % word
-        string = re.sub(pattern, replace, string)
+    if string:
+        for word in WORDS_TO_REPLACE:
+            pattern = _gen_regexp_pattern(word.capitalize())
+            replace = ' %s ' % word
+            string = re.sub(pattern, replace, string)
     return string
 
 
