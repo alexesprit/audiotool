@@ -5,21 +5,10 @@ import os
 import sys
 
 import terminal
+
 from tag import TagWrapper
+from normalize import normalize_path, normalize_string
 
-
-WORDS_TO_REPLACE = (
-    'a', 'an', 'the',
-
-    'and', 'or',
-
-    'as', 'at', 'but', 'by',
-    'for', 'in', 'of', 'off',
-    'on', 'per', 'to', 'up',
-    'via', 'yet',
-
-    'am', 'was', 'is', 'are',
-)
 
 GENRE_OUT_FILENAME = 'genres.txt'
 
@@ -30,6 +19,7 @@ def keyboard_interrupt(function):
             function(*args)
         except KeyboardInterrupt:
             println('Cancelled')
+
     return wrapper
 
 
@@ -60,34 +50,6 @@ def gen_audio_files(directory):
         for filename in files:
             if TagWrapper.is_supported(filename):
                 yield os.path.join(root, filename)
-
-
-def normalize_path(path):
-    elements = path.split(os.sep)
-    for i in xrange(0, len(elements)):
-        elements[i] = normalize_string(elements[i])
-    return os.sep.join(elements)
-
-
-def normalize_string(string):
-    if not string:
-        return None
-    matches = (
-        ': %s', '- %s', '_ %s', '%s (', '. %s', '%s -'
-    )
-    for word in WORDS_TO_REPLACE:
-        old_word = word.capitalize()
-        old_repl = ' %s ' % old_word
-        if string.count(old_repl):
-            skip = False
-            for m in matches:
-                if string.count(m % old_word):
-                    skip = True
-                    break
-            if not skip:
-                new_repl = ' %s ' % word
-                string = string.replace(old_repl, new_repl)
-    return string
 
 
 @keyboard_interrupt
