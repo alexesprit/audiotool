@@ -96,7 +96,7 @@ def fix_audio_tags(directory):
         try:
             tag = TagWrapper(filename)
         except IOError:
-            println('[search_mp3] error: set tag for %s' % filename)
+            println('[fix_audio_tags] error: set tag for %s' % filename)
             continue
 
         old_artist = tag['artist']
@@ -172,7 +172,7 @@ def collect_genres(directory):
             try:
                 tag = TagWrapper(filename)
             except IOError:
-                println('[search_genres] error: get tag from %s' % filename)
+                println('[collect_genres] error: get tag from %s' % filename)
                 continue
 
             genre = tag['genre']
