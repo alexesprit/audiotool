@@ -5,8 +5,7 @@ import os
 import sys
 
 import terminal
-import eyed3
-import eyed3.id3
+from tag import TagWrapper
 
 
 WORDS_TO_REPLACE = (
@@ -93,38 +92,39 @@ def normalize_string(string):
 
 
 @keyboard_interrupt
-def fix_mp3_tags(directory):
-    for f in gen_mp3_files(directory):
+def fix_audio_tags(directory):
+    for filename in gen_mp3_files(directory):
         try:
-            tag = eyed3.load(f, eyed3.id3.ID3_V2_3).tag
+            tag = TagWrapper(filename)
+        except IOError:
+            println('[search_mp3] error: set tag for %s' % filename)
+            continue
 
-            old_artist = tag.artist
-            old_album = tag.album
-            old_title = tag.title
+        old_artist = tag['artist']
+        old_album = tag['album']
+        old_title = tag['title']
 
-            new_artist = normalize_string(old_artist)
-            new_album = normalize_string(old_album)
-            new_title = normalize_string(old_title)
+        new_artist = normalize_string(old_artist)
+        new_album = normalize_string(old_album)
+        new_title = normalize_string(old_title)
 
-            changed = False
-            if old_artist != new_artist:
-                tag.artist = new_artist
-                changed = True
-            if old_album != new_album:
-                tag.album = new_album
-                changed = True
-            if old_title != new_title:
-                tag.title = new_title
-                changed = True
-            if changed:
-                tag.save()
-                println('[!] file updated: %s' % f)
-            new_fname = normalize_path(f)
-            if f != new_fname:
-                os.rename(f, new_fname)
-                println('[!] file renamed: %s' % f)
-        except (IOError, eyed3.id3.TagException):
-            println('[search_mp3] error: set tag for %s' % f)
+        changed = False
+        if old_artist != new_artist:
+            tag['artist'] = new_artist
+            changed = True
+        if old_album != new_album:
+            tag['album'] = new_album
+            changed = True
+        if old_title != new_title:
+            tag['title'] = new_title
+            changed = True
+        if changed:
+            tag.save()
+            println('[!] file updated: %s' % filename)
+        new_filename = normalize_path(filename)
+        if filename != new_filename:
+            os.rename(filename, new_filename)
+            println('[!] file renamed: %s' % filename)
 
 
 @keyboard_interrupt
@@ -169,18 +169,17 @@ def collect_genres(directory):
     for item in gen_directories(directory, False):
         mp3s = glob.glob(os.path.join(item, '*.mp3'))
         if mp3s:
-            path = mp3s[0]
+            filename = mp3s[0]
             try:
-                tag = eyed3.load(path, eyed3.id3.ID3_V2_3).tag
-                if tag.genre:
-                    genre = tag.genre.name
-                    if genre not in genres:
-                        genres[genre] = []
-                    genres[genre].append(item)
-                else:
-                    println('[search_genres] error: not genre in %s' % path)
+                tag = TagWrapper(filename)
             except IOError:
-                println('[search_genres] error: get tag from %s' % path)
+                println('[search_genres] error: get tag from %s' % filename)
+                continue
+
+            genre = tag['genre']
+            if genre not in genres:
+                genres[genre] = []
+            genres[genre].append(item)
     out = open('genres.txt', 'w')
     for genre in genres:
         out.write(genre + ':\n')
@@ -203,7 +202,7 @@ def main():
     args = parser.parse_args()
 
     if args.tags:
-        fix_mp3_tags(args.directory)
+        fix_audio_tags(args.directory)
     elif args.rename:
         rename_dirs(args.directory)
     elif args.genres:
