@@ -1,0 +1,3 @@
+mutagen==1.23
+ping==0.2
+requests==2.3.0
