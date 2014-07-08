@@ -3,32 +3,38 @@ import unittest
 from tag import TagWrapper
 
 
+AUDIO_TEXT_EXAMPLES_DIR = 'audio_examples'
+
+
 class TagWrapperTest(unittest.TestCase):
     def setUp(self):
         self.m4afiles = {
-            os.path.join('test', '1.m4a'): {
+            self._get_example_path('1.m4a'): {
                 'artist': 'Test Artist',
                 'album': 'Test Album',
                 'title': 'Test Title',
-                },
-            os.path.join('test', '2.m4a'): {
+            },
+            self._get_example_path('2.m4a'): {
                 'artist': 'Test Artist',
                 'album': None,
                 'title': 'Test Title',
-                },
-            }
+            },
+        }
         self.mp3files = {
-            os.path.join('test', '1.mp3'): {
+            self._get_example_path('1.mp3'): {
                 'artist': 'Test Artist',
                 'album': 'Test Album',
                 'title': 'Test Title',
-                },
-            os.path.join('test', '2.mp3'): {
+            },
+            self._get_example_path('2.mp3'): {
                 'artist': 'Test Artist',
                 'album': None,
                 'title': 'Test Title',
-                },
-            }
+            },
+        }
+
+    def _get_example_path(self, example_name):
+        return os.path.join(AUDIO_TEXT_EXAMPLES_DIR, example_name)
 
     def _test_some_tags(self, files):
         for filename in files:
