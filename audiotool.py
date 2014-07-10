@@ -36,12 +36,11 @@ def println(output):
         pass
 
 
-def gen_directories(directory, alldirs):
+def gen_directories(directory, with_files=False):
     for root, dirs, files in os.walk(directory):
-        if not files and not alldirs:
-            continue
-        println('[!] Scanning: %s' % root)
-        yield root
+        if files or not with_files:
+            println('[!] Scanning: %s' % root)
+            yield root
 
 
 def gen_audio_files(directory):
@@ -91,7 +90,7 @@ def fix_audio_tags(directory):
 @keyboard_interrupt
 def rename_dirs(directory):
     renamed_dirs = []
-    for item in gen_directories(directory, True):
+    for item in gen_directories(directory, with_files=False):
         old_path = item
         new_path = normalize_path(old_path)
         if old_path != new_path:
@@ -108,7 +107,7 @@ def rename_dirs(directory):
 @keyboard_interrupt
 def search_uncovered_dirs(directory):
     uncovered_dirs = []
-    for item in gen_directories(directory, False):
+    for item in gen_directories(directory, with_files=True):
         covered = False
         for subitem in os.listdir(item):
             ext = os.path.splitext(subitem)[1]
@@ -127,7 +126,7 @@ def search_uncovered_dirs(directory):
 @keyboard_interrupt
 def collect_genres(directory):
     genres = {}
-    for item in gen_directories(directory, False):
+    for item in gen_directories(directory, with_files=True):
         mp3s = glob.glob(os.path.join(item, '*.mp3'))
         if mp3s:
             filename = mp3s[0]
