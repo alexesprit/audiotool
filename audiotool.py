@@ -138,9 +138,10 @@ def collect_genres(directory):
                 continue
 
             genre = tag['genre']
-            if genre not in genres:
-                genres[genre] = []
-            genres[genre].append(item)
+            if genre:
+                if genre not in genres:
+                    genres[genre] = []
+                genres[genre].append(item)
 
     with open(GENRE_OUT_FILENAME, 'w') as f:
         for genre in genres:
