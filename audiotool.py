@@ -1,6 +1,5 @@
 ﻿# coding: utf-8
 import argparse
-import glob
 import os
 import sys
 
@@ -43,13 +42,14 @@ def gen_directories(directory, with_files=False):
             yield root
 
 
-def gen_audio_files(directory):
+def gen_audio_files(directory, only_first=False):
     for root, dirs, files in os.walk(directory):
         println('[!] Scanning %s' % root)
         for filename in files:
             if TagWrapper.is_supported(filename):
                 yield os.path.join(root, filename)
-
+                if only_first:
+                    break
 
 @keyboard_interrupt
 def fix_audio_tags(directory):
@@ -126,21 +126,19 @@ def search_uncovered_dirs(directory):
 @keyboard_interrupt
 def collect_genres(directory):
     genres = {}
-    for item in gen_directories(directory, with_files=True):
-        mp3s = glob.glob(os.path.join(item, '*.mp3'))
-        if mp3s:
-            filename = mp3s[0]
-            try:
-                tag = TagWrapper(filename)
-            except IOError:
-                println('[collect_genres] error: get tag from %s' % filename)
-                continue
+    for filename in gen_audio_files(directory, only_first=True):
+        try:
+            tag = TagWrapper(filename)
+        except IOError:
+            println('[collect_genres] error: get tag from %s' % filename)
+            continue
 
-            genre = tag['genre']
-            if genre:
-                if genre not in genres:
-                    genres[genre] = []
-                genres[genre].append(item)
+        genre = tag['genre']
+        if genre:
+            if genre not in genres:
+                genres[genre] = []
+            basedir = os.path.dirname(filename)
+            genres[genre].append(basedir)
 
     with open(GENRE_OUT_FILENAME, 'w') as f:
         for genre in genres:
