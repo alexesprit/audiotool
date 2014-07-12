@@ -2,6 +2,7 @@
 import argparse
 import os
 import sys
+from paths import gen_audio_files, gen_directories
 
 from tag import TagWrapper
 from normalize import normalize_path, normalize_string
@@ -27,37 +28,6 @@ def print_scanning(function):
 
     return wrapper
 
-
-def decode_path(function):
-    def wrapper2x(*args, **kwargs):
-        for item in function(*args, **kwargs):
-            yield item.decode(sys.getfilesystemencoding())
-
-    def wrapper3x(*args, **kwargs):
-        for item in function(*args, **kwargs):
-            yield item
-
-    if sys.version_info > (3, ):
-        return wrapper3x
-    else:
-        return wrapper2x
-
-
-@decode_path
-def gen_directories(directory, with_files=False):
-    for root, dirs, files in os.walk(directory):
-        if files or not with_files:
-            yield root
-
-
-@decode_path
-def gen_audio_files(directory, only_first=False):
-    for root, dirs, files in os.walk(directory):
-        for filename in files:
-            if TagWrapper.is_supported(filename):
-                yield os.path.join(root, filename)
-                if only_first:
-                    break
 
 @keyboard_interrupt
 @print_scanning
