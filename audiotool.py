@@ -1,5 +1,6 @@
 ﻿# coding: utf-8
 import argparse
+import codecs
 import os
 import sys
 from paths import gen_audio_files, gen_directories
@@ -120,12 +121,13 @@ def collect_genres(directory):
             basedir = os.path.dirname(filename)
             genres[genre].append(basedir)
 
-    with open(GENRE_OUT_FILENAME, 'w') as f:
+
+    with codecs.open(GENRE_OUT_FILENAME, 'w', 'utf-8') as fd:
         for genre in genres:
-            f.write(genre + ':\n')
+            fd.write(genre + ':\n')
             for item in genres[genre]:
-                f.write(item + '\n')
-            f.write('\n')
+                fd.write(item + '\n')
+            fd.write('\n')
     filepath = os.path.join(os.getcwd(), 'genres.txt')
     print(u'genre info written to %s' % filepath)
 
