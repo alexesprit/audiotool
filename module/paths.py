@@ -1,6 +1,7 @@
 import os
 import sys
-from tag import TagWrapper
+
+from module.tag import TagWrapper
 
 
 def decode_path(function):

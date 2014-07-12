@@ -5,5 +5,5 @@ python:
 install:
   - "pip install -r requirements.txt"
 script:
-  - "python normalize_test.py"
-  - "python tag_test.py"
+  - "python module\normalize_test.py"
+  - "python module\tag_test.py"

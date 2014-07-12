@@ -3,10 +3,11 @@ import argparse
 import codecs
 import os
 import sys
-from paths import gen_audio_files, gen_directories
 
-from tag import TagWrapper
-from normalize import normalize_path, normalize_string
+from module.normalize import normalize_path, normalize_string
+
+from module.paths import gen_audio_files, gen_directories
+from module.tag import TagWrapper
 
 
 GENRE_OUT_FILENAME = 'genres.txt'
@@ -120,7 +121,6 @@ def collect_genres(directory):
                 genres[genre] = []
             basedir = os.path.dirname(filename)
             genres[genre].append(basedir)
-
 
     with codecs.open(GENRE_OUT_FILENAME, 'w', 'utf-8') as fd:
         for genre in genres:

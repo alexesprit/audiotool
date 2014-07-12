@@ -1,4 +1,5 @@
 import unittest
+
 from normalize import normalize_path, normalize_string
 
 
