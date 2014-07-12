@@ -3,8 +3,6 @@ import argparse
 import os
 import sys
 
-import terminal
-
 from tag import TagWrapper
 from normalize import normalize_path, normalize_string
 
@@ -13,38 +11,48 @@ GENRE_OUT_FILENAME = 'genres.txt'
 
 
 def keyboard_interrupt(function):
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         try:
-            function(*args)
+            function(*args, **kwargs)
         except KeyboardInterrupt:
-            println('Cancelled')
+            print(u'Cancelled')
 
     return wrapper
 
 
-def println(output):
-    window_width = terminal.get_terminal_size()[0]
-    if len(output) >= window_width:
-        output = '%s…' % output[0:window_width - 1]
-    output = unicode(output, 'cp1251')
-    try:
-        if os.name == 'nt':
-            output = output.encode('cp866')
-        print output
-    except UnicodeEncodeError:
-        pass
+def print_scanning(function):
+    def wrapper(directory):
+        print(u'Scanning %s' % os.path.abspath(directory))
+        function(directory)
+
+    return wrapper
 
 
+def decode_path(function):
+    def wrapper2x(*args, **kwargs):
+        for item in function(*args, **kwargs):
+            yield item.decode(sys.getfilesystemencoding())
+
+    def wrapper3x(*args, **kwargs):
+        for item in function(*args, **kwargs):
+            yield item
+
+    if sys.version_info > (3, ):
+        return wrapper3x
+    else:
+        return wrapper2x
+
+
+@decode_path
 def gen_directories(directory, with_files=False):
     for root, dirs, files in os.walk(directory):
         if files or not with_files:
-            println('[!] Scanning: %s' % root)
             yield root
 
 
+@decode_path
 def gen_audio_files(directory, only_first=False):
     for root, dirs, files in os.walk(directory):
-        println('[!] Scanning %s' % root)
         for filename in files:
             if TagWrapper.is_supported(filename):
                 yield os.path.join(root, filename)
@@ -52,12 +60,13 @@ def gen_audio_files(directory, only_first=False):
                     break
 
 @keyboard_interrupt
+@print_scanning
 def fix_audio_tags(directory):
     for filename in gen_audio_files(directory):
         try:
             tag = TagWrapper(filename)
         except IOError:
-            println('[fix_audio_tags] error: set tag for %s' % filename)
+            print(u'[fix_audio_tags] error: set tag for %s' % filename)
             continue
 
         old_artist = tag['artist']
@@ -80,14 +89,15 @@ def fix_audio_tags(directory):
             changed = True
         if changed:
             tag.save()
-            println('[!] file updated: %s' % filename)
+            print(u'[!] file updated: %s' % filename)
         new_filename = normalize_path(filename)
         if filename != new_filename:
             os.rename(filename, new_filename)
-            println('[!] file renamed: %s' % filename)
+            print(u'[!] file renamed: %s' % filename)
 
 
 @keyboard_interrupt
+@print_scanning
 def rename_dirs(directory):
     renamed_dirs = []
     for item in gen_directories(directory, with_files=False):
@@ -96,15 +106,15 @@ def rename_dirs(directory):
         if old_path != new_path:
             os.rename(old_path, new_path)
             renamed_dirs.append(old_path)
-    println('')
     if renamed_dirs:
         for path in renamed_dirs:
-            println('[!] folder renamed: %s' % path)
+            print(u'folder renamed: %s' % path)
     else:
-        println('[!] Nothing is renamed')
+        print(u'Nothing is renamed')
 
 
 @keyboard_interrupt
+@print_scanning
 def search_uncovered_dirs(directory):
     uncovered_dirs = []
     for item in gen_directories(directory, with_files=True):
@@ -115,22 +125,22 @@ def search_uncovered_dirs(directory):
                 covered = True
         if not covered:
             uncovered_dirs.append(item)
-    println('')
     if uncovered_dirs:
         for path in uncovered_dirs:
-            println('[!] Uncovered: %s' % path)
+            print(u'Uncovered: %s' % path)
     else:
-        println('[!] All directories have covers')
+        print(u'All directories have covers')
 
 
 @keyboard_interrupt
+@print_scanning
 def collect_genres(directory):
     genres = {}
     for filename in gen_audio_files(directory, only_first=True):
         try:
             tag = TagWrapper(filename)
         except IOError:
-            println('[collect_genres] error: get tag from %s' % filename)
+            print(u'[collect_genres] error: get tag from %s' % filename)
             continue
 
         genre = tag['genre']
@@ -147,7 +157,7 @@ def collect_genres(directory):
                 f.write(item + '\n')
             f.write('\n')
     filepath = os.path.join(os.getcwd(), 'genres.txt')
-    println('[!] genre info written to %s' % filepath)
+    print(u'genre info written to %s' % filepath)
 
 
 def main():
