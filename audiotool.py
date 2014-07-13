@@ -92,8 +92,7 @@ def search_uncovered_dirs(directory):
     uncovered_dirs = []
     for item in gen_directories(directory, with_files=True):
         for subitem in os.listdir(item):
-            ext = os.path.splitext(subitem)[1]
-            if ext in ('.jpg', '.png', '.jpeg'):
+            if is_artwork_file(subitem):
                 break
         else:
             uncovered_dirs.append(item)
