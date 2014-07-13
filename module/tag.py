@@ -70,6 +70,9 @@ class _MP3Wrapper(_AbstractWrapper):
         else:
             raise ValueError('Unknown item type')
 
+    def __repr__(self):
+        return repr(self.audio)
+
     def save(self):
         self.audio.save(v1=1, v2_version=3)
 
@@ -117,6 +120,9 @@ class _MP4Wrapper(_AbstractWrapper):
             self.audio[tag_id] = [value]
         else:
             raise ValueError('Unknown item type')
+
+    def __repr__(self):
+        return repr(self.audio)
 
     def save(self):
         self.audio.save()
