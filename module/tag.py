@@ -3,7 +3,7 @@ from mutagen._id3frames import Frames, APIC
 
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4Cover
-from module.artwork import Artwork
+from artwork import Artwork
 
 
 class _AbstractWrapper:
