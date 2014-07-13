@@ -14,6 +14,9 @@ class _AbstractWrapper:
     def __setitem__(self, item, value):
         raise NotImplementedError
 
+    def __repr__(self):
+        raise NotImplementedError
+
     def save(self):
         raise NotImplementedError
 
@@ -31,6 +34,9 @@ class _MP3Wrapper(_AbstractWrapper):
 
     def __setitem__(self, item, value):
         self.audio[item] = [value]
+
+    def __repr__(self):
+        return self.audio.pprint()
 
     def save(self):
         self.audio.save(v1=1, v2_version=3)
