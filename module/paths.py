@@ -1,7 +1,7 @@
 import os
 import sys
 
-from module.tag import TagWrapper
+from module.tag import is_audio_supported
 
 
 def decode_path(function):
@@ -21,7 +21,7 @@ def decode_path(function):
 
 @decode_path
 def gen_audio_files(directory, only_first=False):
-    for fp in _gen_files(directory, only_first, TagWrapper.is_supported):
+    for fp in _gen_files(directory, only_first, is_audio_supported):
         yield fp
 
 @decode_path

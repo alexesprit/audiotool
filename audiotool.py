@@ -7,7 +7,7 @@ import sys
 from module.normalize import normalize_path, normalize_string
 
 from module.paths import gen_audio_files, gen_directories
-from module.tag import TagWrapper
+from module.tag import get_tags
 
 
 GENRE_OUT_FILENAME = 'genres.txt'
@@ -36,7 +36,7 @@ def print_scanning(function):
 def fix_audio_tags(directory):
     for filename in gen_audio_files(directory):
         try:
-            tag = TagWrapper(filename)
+            tag = get_tags(filename)
         except IOError:
             print(u'[fix_audio_tags] error: set tag for %s' % filename)
             continue
@@ -110,7 +110,7 @@ def collect_genres(directory):
     genres = {}
     for filename in gen_audio_files(directory, only_first=True):
         try:
-            tag = TagWrapper(filename)
+            tag = get_tags(filename)
         except IOError:
             print(u'[collect_genres] error: get tag from %s' % filename)
             continue

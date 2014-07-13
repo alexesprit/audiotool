@@ -50,34 +50,27 @@ class _MP4Wrapper(_AbstractWrapper):
     def __setitem__(self, item, value):
         self.audio[item] = [value]
 
-    def save(self):
-        self.audio.save()
-
-
-class TagWrapper:
-    WRAPPER_MAP = {
-        '.mp3': _MP3Wrapper,
-        '.m4a': _MP4Wrapper,
-    }
-
-    @staticmethod
-    def is_supported(filename):
-        extension = os.path.splitext(filename)[1]
-        return extension in TagWrapper.WRAPPER_MAP
-
-    def __init__(self, filename):
-        extension = os.path.splitext(filename)[1]
-        try:
-            tag_type = TagWrapper.WRAPPER_MAP[extension]
-        except KeyError:
-            raise RuntimeError
-        self.audio = tag_type(filename)
-
-    def __getitem__(self, item):
-        return self.audio[item]
-
-    def __setitem__(self, item, value):
-        self.audio[item] = [value]
+    def __repr__(self):
+        return self.audio.pprint()
 
     def save(self):
         self.audio.save()
+
+
+_WRAPPER_MAP = {
+    '.mp3': _MP3Wrapper,
+    '.m4a': _MP4Wrapper,
+}
+
+
+def get_tags(filename):
+    extension = os.path.splitext(filename)[1]
+    try:
+        return _WRAPPER_MAP[extension](filename)
+    except KeyError:
+        raise RuntimeError
+
+
+def is_audio_supported(filename):
+    extension = os.path.splitext(filename)[1]
+    return extension in _WRAPPER_MAP

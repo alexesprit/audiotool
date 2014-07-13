@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from tag import TagWrapper
+from tag import get_tags
 
 
 AUDIO_TEXT_EXAMPLES_DIR = 'audio_examples'
@@ -39,7 +39,7 @@ class TagWrapperTest(unittest.TestCase):
 
     def _test_some_tags(self, files):
         for filename in files:
-            tag = TagWrapper(filename)
+            tag = get_tags(filename)
             test_keys = files[filename]
             for key in test_keys:
                 expected = test_keys[key]
