@@ -3,11 +3,12 @@ import argparse
 import codecs
 import os
 import sys
+from module.artwork import is_artwork_file, create_artwork
 
 from module.normalize import normalize_path, normalize_string
 
 from module.paths import gen_audio_files, gen_directories
-from module.tag import get_tags
+from module.tag import get_tags, is_audio_file
 
 
 GENRE_OUT_FILENAME = 'genres.txt'
@@ -132,6 +133,27 @@ def collect_genres(directory):
     print(u'genre info written to %s' % filepath)
 
 
+@keyboard_interrupt
+@print_scanning
+def attach_artworks(directory):
+    for item in gen_directories(directory, with_files=True):
+        dir_items = os.listdir(item)
+        for subitem in dir_items:
+            subitem_path = os.path.join(item, subitem)
+            if is_artwork_file(subitem_path):
+                artwork_filename = subitem_path
+                break
+        else:
+            continue
+        artwork = create_artwork(artwork_filename)
+        for subitem in dir_items:
+            subitem_path = os.path.join(item, subitem)
+            if is_audio_file(subitem_path):
+                tag = get_tags(subitem_path)
+                tag['artwork'] = artwork
+                tag.save()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(dest='directory', help='Path to scanning')
@@ -139,7 +161,8 @@ def main():
     group.add_argument('-g', dest='genres', action='store_true', help='collect genres')
     group.add_argument('-r', dest='rename', action='store_true', help='rename directories')
     group.add_argument('-t', dest='tags', action='store_true', help='fix ID3 tags')
-    group.add_argument('-c', dest='covers', action='store_true', help='search uncovered folders')
+    group.add_argument('-u', dest='uncovered', action='store_true', help='search folders without album artwork')
+    group.add_argument('-a', dest='artwork', action='store_true', help='attach album artwork to audio files')
     args = parser.parse_args()
 
     if args.tags:
@@ -148,8 +171,10 @@ def main():
         rename_dirs(args.directory)
     elif args.genres:
         collect_genres(args.directory)
-    elif args.covers:
+    elif args.uncovered:
         search_uncovered_dirs(args.directory)
+    elif args.artwork:
+        attach_artworks(args.directory)
     return 0
 
 

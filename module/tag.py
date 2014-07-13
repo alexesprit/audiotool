@@ -139,3 +139,6 @@ def get_tags(filename):
 def is_audio_supported(filename):
     extension = os.path.splitext(filename)[1]
     return extension in _WRAPPER_MAP
+
+def is_audio_file(filename):
+    return is_audio_supported(filename)

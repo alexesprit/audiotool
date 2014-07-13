@@ -33,3 +33,6 @@ def create_artwork(filename):
 def is_file_supported(filename):
     extension = os.path.splitext(filename)[1]
     return extension in _MIME_MAP
+
+def is_artwork_file(filename):
+    return is_file_supported(filename)
