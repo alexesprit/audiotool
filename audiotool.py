@@ -137,17 +137,15 @@ def attach_artworks(directory):
     for item in gen_directories(directory, with_files=True):
         dir_items = os.listdir(item)
         for subitem in dir_items:
-            subitem_path = os.path.join(item, subitem)
-            if is_artwork_file(subitem_path):
-                artwork_filename = subitem_path
+            if is_artwork_file(subitem):
+                artwork_filename = os.path.join(item, subitem)
                 break
         else:
             continue
         artwork = create_artwork(artwork_filename)
         for subitem in dir_items:
-            subitem_path = os.path.join(item, subitem)
-            if is_audio_file(subitem_path):
-                tag = get_tags(subitem_path)
+            if is_audio_file(subitem):
+                tag = get_tags(os.path.join(item, subitem))
                 tag['artwork'] = artwork
                 tag.save()
 
