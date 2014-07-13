@@ -91,12 +91,11 @@ def rename_dirs(directory):
 def search_uncovered_dirs(directory):
     uncovered_dirs = []
     for item in gen_directories(directory, with_files=True):
-        covered = False
         for subitem in os.listdir(item):
             ext = os.path.splitext(subitem)[1]
             if ext in ('.jpg', '.png', '.jpeg'):
-                covered = True
-        if not covered:
+                break
+        else:
             uncovered_dirs.append(item)
     if uncovered_dirs:
         for path in uncovered_dirs:
