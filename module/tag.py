@@ -1,6 +1,6 @@
 import os
 
-from mutagen._id3frames import Frames, APIC
+from mutagen.id3 import Frames, APIC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4Cover
 
