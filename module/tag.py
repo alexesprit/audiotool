@@ -2,8 +2,7 @@ from base64 import b64decode, b64encode
 import os
 
 from mutagen.flac import FLAC, Picture
-from mutagen.id3 import Frames, APIC
-from mutagen.mp3 import MP3
+from mutagen.id3 import APIC, Frames, ID3
 from mutagen.mp4 import MP4, MP4Cover
 from mutagen.oggvorbis import OggVorbis
 
@@ -136,7 +135,7 @@ class _MP3Wrapper(_AbstractWrapper):
 
     def __init__(self, filename):
         _AbstractWrapper.__init__(self)
-        self.audio = MP3(filename)
+        self.audio = ID3(filename)
 
     def __getattr__(self, attr):
         if attr in self.TAG_MAP:
@@ -157,13 +156,13 @@ class _MP3Wrapper(_AbstractWrapper):
             if isinstance(value, Artwork):
                 if not frame:
                     frame = APIC(encoding=3, type=3)
-                    self.audio.tags.add(frame)
+                    self.audio.add(frame)
                 frame.data = value.data
                 frame.mime = value.mime
             elif isinstance(value, basestring):
                 if not frame:
-                    frame = Frames[frame_id](encoding = 3)
-                    self.audio.tags.add(frame)
+                    frame = Frames[frame_id](encoding=3)
+                    self.audio.add(frame)
                 frame.text = [value]
             else:
                 raise TagValueError(value)
