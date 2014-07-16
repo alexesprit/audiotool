@@ -41,24 +41,13 @@ def fix_audio_tags(directory):
             print(u'[fix_audio_tags] error: set tag for %s' % filename)
             continue
 
-        old_artist = tag['artist']
-        old_album = tag['album']
-        old_title = tag['title']
-
-        new_artist = normalize_string(old_artist)
-        new_album = normalize_string(old_album)
-        new_title = normalize_string(old_title)
-
         changed = False
-        if old_artist != new_artist:
-            tag['artist'] = new_artist
-            changed = True
-        if old_album != new_album:
-            tag['album'] = new_album
-            changed = True
-        if old_title != new_title:
-            tag['title'] = new_title
-            changed = True
+        for key in ('artist', 'album', 'title'):
+            old_value = getattr(tag, key)
+            new_value = normalize_string(old_value)
+            if old_value != new_value:
+                setattr(tag, key, new_value)
+                changed = True
         if changed:
             tag.save()
             print(u'[!] file updated: %s' % filename)
@@ -113,7 +102,7 @@ def collect_genres(directory):
             print(u'[collect_genres] error: get tag from %s' % filename)
             continue
 
-        genre = tag['genre']
+        genre = tag.genre
         if genre:
             if genre not in genres:
                 genres[genre] = []
@@ -145,7 +134,7 @@ def attach_artworks(directory):
         for subitem in dir_items:
             if is_audio_file(subitem):
                 tag = get_tags(os.path.join(item, subitem))
-                tag['artwork'] = artwork
+                tag.artwork = artwork
                 tag.save()
 
 

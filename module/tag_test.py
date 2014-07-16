@@ -43,7 +43,7 @@ class TagWrapperTest(unittest.TestCase):
             test_keys = files[filename]
             for key in test_keys:
                 expected = test_keys[key]
-                actual = tag[key]
+                actual = getattr(tag, key)
                 self.assertEqual(actual, expected)
 
     def test_m4a_tags(self):
