@@ -1,6 +1,6 @@
 import os
 
-__all__ = ['create_artwork', 'is_file_supported', ]
+__all__ = ['Artwork', 'create_artwork', 'is_artwork_supported', 'is_artwork_file', ]
 
 
 class Artwork:
@@ -31,9 +31,10 @@ def create_artwork(filename):
     return Artwork(mime, data)
 
 
-def is_file_supported(filename):
+def is_artwork_file(filename):
+    return is_artwork_supported(filename)
+
+
+def is_artwork_supported(filename):
     extension = os.path.splitext(filename)[1]
     return extension in _MIME_MAP
-
-def is_artwork_file(filename):
-    return is_file_supported(filename)

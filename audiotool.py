@@ -3,10 +3,9 @@ import argparse
 import codecs
 import os
 import sys
+
 from module.artwork import is_artwork_file, create_artwork
-
 from module.normalize import normalize_path, normalize_string
-
 from module.paths import gen_audio_files, gen_directories
 from module.tag import get_tags, is_audio_file
 

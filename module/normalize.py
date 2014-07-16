@@ -2,7 +2,10 @@ import os
 import re
 
 
-WORDS_TO_REPLACE = (
+__all__ = ['normalize_path', 'normalize_string', ]
+
+
+_WORDS_TO_REPLACE = (
     'a', 'an', 'the',
 
     'and', 'or',
@@ -31,7 +34,7 @@ def normalize_path(path):
 
 def normalize_string(string):
     if string:
-        for word in WORDS_TO_REPLACE:
+        for word in _WORDS_TO_REPLACE:
             pattern = _gen_regexp_pattern(word.capitalize())
             replace = ' %s ' % word
             string = re.sub(pattern, replace, string)

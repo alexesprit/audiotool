@@ -1,9 +1,13 @@
 import os
-from mutagen._id3frames import Frames, APIC
 
+from mutagen._id3frames import Frames, APIC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4Cover
+
 from artwork import Artwork
+
+
+__all__ = ['get_tags', 'is_audio_file', 'is_audio_supported', ]
 
 
 class _AbstractWrapper:
@@ -142,9 +146,10 @@ def get_tags(filename):
         raise RuntimeError
 
 
+def is_audio_file(filename):
+    return is_audio_supported(filename)
+
+
 def is_audio_supported(filename):
     extension = os.path.splitext(filename)[1]
     return extension in _WRAPPER_MAP
-
-def is_audio_file(filename):
-    return is_audio_supported(filename)
