@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from module.artwork import create_artwork
+from artwork import create_artwork
 from tag import get_tags
 
 

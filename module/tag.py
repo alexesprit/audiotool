@@ -7,7 +7,7 @@ from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4Cover
 from mutagen.oggvorbis import OggVorbis
 
-from module.artwork import Artwork
+from artwork import Artwork
 
 
 __all__ = ['get_tags', 'is_audio_file', 'is_audio_supported', ]
