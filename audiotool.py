@@ -107,13 +107,15 @@ def collect_genres(directory):
             if genre not in genres:
                 genres[genre] = []
             basedir = os.path.dirname(filename)
-            genres[genre].append(basedir)
+            genres[genre].append(os.path.abspath(basedir))
 
     with codecs.open(GENRE_OUT_FILENAME, 'w', 'utf-8') as fd:
         for genre in genres:
-            fd.write(genre + ':\n')
+            fd.write(genre)
+            fd.write('\n')
             for item in genres[genre]:
-                fd.write(item + '\n')
+                fd.write(item)
+                fd.write('\n')
             fd.write('\n')
     filepath = os.path.join(os.getcwd(), 'genres.txt')
     print(u'genre info written to %s' % filepath)
