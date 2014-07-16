@@ -90,7 +90,7 @@ class _MP4Wrapper(_AbstractWrapper):
         'genre': '\xa9gen',
     }
     COVER_FOFMAT_MAP = {
-        'image/jpg': MP4Cover.FORMAT_JPEG,
+        'image/jpeg': MP4Cover.FORMAT_JPEG,
         'image/png': MP4Cover.FORMAT_PNG,
     }
 
