@@ -1,6 +1,9 @@
+from distutils.dir_util import copy_tree, remove_tree
 import os
+import tempfile
 import unittest
 
+from module.artwork import create_artwork
 from tag import get_tags
 
 
@@ -10,7 +13,8 @@ COVER_EXAMPLE_PATH = os.path.join(AUDIO_EXAMPLES_DIR, 'cover.jpg')
 
 class TagWrapperTest(unittest.TestCase):
     def setUp(self):
-        self.test_files = {
+        self.formats = ('flac', 'm4a', 'mp3', 'ogg')
+        self.read_test_data_map = {
             '1': {
                 'artwork': None,
                 'artist': 'Test Artist',
@@ -24,41 +28,53 @@ class TagWrapperTest(unittest.TestCase):
                 'title': 'Test Title',
             },
             '3': {
-                'artwork': self._get_cover_data(),
+                'artwork': create_artwork(COVER_EXAMPLE_PATH).data,
                 'artist': 'Test Artist',
                 'album': 'Test Album',
                 'title': 'Test Title',
             },
         }
-        self.formats = ('flac', 'm4a', 'mp3', 'ogg')
-
-    def _get_example_path(self, example_name):
-        return os.path.join(AUDIO_EXAMPLES_DIR, example_name)
-
-    def _get_cover_data(self):
-        with open(COVER_EXAMPLE_PATH, 'rb') as fd:
-            return fd.read()
-
-    def _gen_test_data(self):
-        for filename in self.test_files:
-            for format in self.formats:
-                full_filename = '{0:s}.{1:s}'.format(filename, format)
-                filepath = os.path.join(AUDIO_EXAMPLES_DIR, full_filename)
-                yield get_tags(filepath), self.test_files[filename]
+        self.write_test_data_map = {
+            '1': {
+                'artwork': create_artwork(COVER_EXAMPLE_PATH),
+                'artist': 'Write Test Artist',
+                'album': 'Write Test Album',
+                'title': 'Write Test Title',
+            },
+        }
 
     def test_getting_tags(self):
-        for tag, data in self._gen_test_data():
+        test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR, self.read_test_data_map)
+        self._test_read_tags(test_data)
+
+    def test_setting_tags(self):
+        temp_dir = tempfile.mkdtemp()
+        copy_tree(AUDIO_EXAMPLES_DIR, temp_dir)
+        test_data = self._gen_test_data(temp_dir, self.write_test_data_map)
+        self._test_write_tags(test_data)
+        self._test_read_tags(test_data)
+        remove_tree(temp_dir)
+
+    def _gen_test_data(self, directory, data_map):
+        for fn in data_map:
+            for ext in self.formats:
+                full_fn = '{0:s}.{1:s}'.format(fn, ext)
+                fp = os.path.join(directory, full_fn)
+                yield get_tags(fp), data_map[fn]
+
+    def _test_read_tags(self, test_data):
+        for tag, data in test_data:
             for key in data:
                 expected = data[key]
                 actual = getattr(tag, key)
                 self.assertEqual(actual, expected)
 
-    def test_setting_tags(self):
-        for tag, data in self._gen_test_data():
-            for key in ('artist', 'album', 'title'):
-                value = 'key_{0:s}'.format(key)
+    def _test_write_tags(self, test_data):
+        for tag, data in test_data:
+            for key in data:
+                value = data[key]
                 setattr(tag, key, value)
-                self.assertEqual(getattr(tag, key), value)
+            tag.save()
 
 
 if '__main__' == __name__:
