@@ -25,6 +25,7 @@ def _gen_regexp_pattern(word):
     return pattern
 
 
+# noinspection PyArgumentList
 def normalize_path(path):
     elements = path.split(os.sep)
     for i in xrange(0, len(elements)):
