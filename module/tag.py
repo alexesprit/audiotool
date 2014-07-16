@@ -1,5 +1,6 @@
 import os
 
+from mutagen.flac import FLAC, Picture
 from mutagen.id3 import Frames, APIC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4Cover
@@ -16,6 +17,50 @@ class _AbstractWrapper(object):
 
     def _set_tag(self, tag, value):
         raise NotImplementedError
+
+
+class _FLACWrapper(_AbstractWrapper):
+    VALID_TAG_KEYS = ('artwork', 'artist', 'album', 'title', 'genre', )
+
+    def __init__(self, filename):
+        _AbstractWrapper.__init__(self)
+        self.audio = FLAC(filename)
+
+    def __getattr__(self, attr):
+        if attr in self.VALID_TAG_KEYS:
+            if attr == 'artwork':
+                if self.audio.pictures:
+                    return self.audio.pictures[0].data
+                else:
+                    return None
+            else:
+                try:
+                    return self.audio[attr][0]
+                except KeyError:
+                    return None
+        raise AttributeError
+
+    def __setattr__(self, attr, value):
+        if attr in self.VALID_TAG_KEYS:
+            if isinstance(value, Artwork):
+                picture = Picture()
+                picture.type = 3
+                picture.mime = value.mime
+                picture.data = value.data
+                self.audio.clear_pictures()
+                self.audio.add_picture(picture)
+            elif isinstance(value, basestring):
+                self.audio[attr] = [value]
+            else:
+                raise ValueError('Unknown item type')
+        else:
+            self.__dict__[attr] = value
+
+    def __repr__(self):
+        return repr(self.audio)
+
+    def save(self):
+        self.audio.save()
 
 
 class _MP3Wrapper(_AbstractWrapper):
@@ -117,8 +162,7 @@ class _MP4Wrapper(_AbstractWrapper):
 
 
 _WRAPPER_MAP = {
-    '.mp3': _MP3Wrapper,
-    '.m4a': _MP4Wrapper,
+    '.flac': _FLACWrapper, '.mp3': _MP3Wrapper, '.m4a': _MP4Wrapper,
 }
 
 
