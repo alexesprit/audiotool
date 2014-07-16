@@ -10,7 +10,8 @@ class Artwork:
 
 
 _MIME_MAP = {
-    '.jpg': u'image/jpg',
+    '.jpeg': u'image/jpeg',
+    '.jpg': u'image/jpeg',
     '.png': u'image/png',
 }
 
