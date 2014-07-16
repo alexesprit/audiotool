@@ -1,9 +1,11 @@
+from base64 import b64decode, b64encode
 import os
 
 from mutagen.flac import FLAC, Picture
 from mutagen.id3 import Frames, APIC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4Cover
+from mutagen.oggvorbis import OggVorbis
 
 from artwork import Artwork
 
@@ -15,8 +17,58 @@ class _AbstractWrapper(object):
     def __init__(self):
         pass
 
-    def _set_tag(self, tag, value):
+    def save(self):
         raise NotImplementedError
+
+
+class _OggVorbisWrapper(_AbstractWrapper):
+    TAG_MAP = {
+        'artwork': 'metadata_block_picture',
+        'artist': 'artist', 'album': 'album',
+        'title': 'title', 'genre': 'genre',
+    }
+    VALID_TAG_KEYS = ('artwork', 'artist', 'album', 'title', 'genre', )
+
+    def __init__(self, filename):
+        _AbstractWrapper.__init__(self)
+        self.audio = OggVorbis(filename)
+
+    def __getattr__(self, attr):
+        if attr in self.VALID_TAG_KEYS:
+            if attr == 'artwork':
+                try:
+                    raw_artwork_data = b64decode(self.audio['metadata_block_picture'][0])
+                    picture = Picture(raw_artwork_data)
+                    return picture.data
+                except KeyError:
+                    return None
+            else:
+                try:
+                    return self.audio[attr][0]
+                except KeyError:
+                    return None
+        raise AttributeError
+
+    def __setattr__(self, attr, value):
+        if attr in self.VALID_TAG_KEYS:
+            if isinstance(value, Artwork):
+                picture = Picture()
+                picture.type = 3
+                picture.mime = value.mime
+                picture.data = value.data
+                self.audio['metadata_block_picture'] = [b64encode(picture.write())]
+            elif isinstance(value, basestring):
+                self.audio[attr] = [value]
+            else:
+                raise ValueError('Unknown item type')
+        else:
+            self.__dict__[attr] = value
+
+    def __repr__(self):
+        return repr(self.audio)
+
+    def save(self):
+        self.audio.save()
 
 
 class _FLACWrapper(_AbstractWrapper):
@@ -162,7 +214,8 @@ class _MP4Wrapper(_AbstractWrapper):
 
 
 _WRAPPER_MAP = {
-    '.flac': _FLACWrapper, '.mp3': _MP3Wrapper, '.m4a': _MP4Wrapper,
+    '.flac': _FLACWrapper, '.ogg': _OggVorbisWrapper,
+    '.mp3': _MP3Wrapper, '.m4a': _MP4Wrapper,
 }
 
 
