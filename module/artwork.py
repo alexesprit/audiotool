@@ -3,7 +3,7 @@ import os
 __all__ = ['Artwork', 'create_artwork', 'is_artwork_supported', 'is_artwork_file', ]
 
 
-class Artwork:
+class Artwork(object):
     def __init__(self, mime, data):
         self.mime = mime
         self.data = data
