@@ -13,6 +13,18 @@ from artwork import Artwork
 __all__ = ['get_tags', 'is_audio_file', 'is_audio_supported', ]
 
 
+class TagValueError(ValueError):
+    def __init__(self, value):
+        message = u'Unknown value type: {0}'.format(value.__class__.__name__)
+        ValueError.__init__(self, message)
+
+
+class TagError(AttributeError):
+    def __init__(self, tag, attr):
+        message = u"'{0}' object has no attribute '{1}'".format(tag.__class__.__name__, attr)
+        AttributeError.__init__(self, message)
+
+
 class _AbstractWrapper(object):
     def __init__(self):
         pass
@@ -47,7 +59,7 @@ class _OggVorbisWrapper(_AbstractWrapper):
                     return self.audio[attr][0]
                 except KeyError:
                     return None
-        raise AttributeError
+        raise TagError(self, attr)
 
     def __setattr__(self, attr, value):
         if attr in self.VALID_TAG_KEYS:
@@ -60,7 +72,7 @@ class _OggVorbisWrapper(_AbstractWrapper):
             elif isinstance(value, basestring):
                 self.audio[attr] = [value]
             else:
-                raise ValueError('Unknown item type')
+                raise TagValueError(value)
         else:
             object.__setattr__(self, attr, value)
 
@@ -90,7 +102,7 @@ class _FLACWrapper(_AbstractWrapper):
                     return self.audio[attr][0]
                 except KeyError:
                     return None
-        raise AttributeError
+        raise TagError(self, attr)
 
     def __setattr__(self, attr, value):
         if attr in self.VALID_TAG_KEYS:
@@ -104,7 +116,7 @@ class _FLACWrapper(_AbstractWrapper):
             elif isinstance(value, basestring):
                 self.audio[attr] = [value]
             else:
-                raise ValueError('Unknown item type')
+                raise TagValueError(value)
         else:
             object.__setattr__(self, attr, value)
 
@@ -136,7 +148,7 @@ class _MP3Wrapper(_AbstractWrapper):
                     return self.audio[frame_id].text[0]
             except KeyError:
                 return None
-        raise AttributeError
+        raise TagError(self, attr)
 
     def __setattr__(self, attr, value):
         if attr in self.TAG_MAP:
@@ -154,7 +166,7 @@ class _MP3Wrapper(_AbstractWrapper):
                     self.audio.tags.add(frame)
                 frame.text = [value]
             else:
-                raise ValueError('Unknown item type')
+                raise TagValueError(value)
         else:
             object.__setattr__(self, attr, value)
 
@@ -187,7 +199,7 @@ class _MP4Wrapper(_AbstractWrapper):
                 return self.audio[tag_id][0]
             except KeyError:
                 return None
-        raise AttributeError
+        raise TagError(self, attr)
 
     def __setattr__(self, attr, value):
         if attr in self.TAG_MAP:
@@ -202,7 +214,7 @@ class _MP4Wrapper(_AbstractWrapper):
             elif isinstance(value, basestring):
                 self.audio[tag_id] = [value]
             else:
-                raise ValueError('Unknown item type')
+                raise TagValueError(value)
         else:
             object.__setattr__(self, attr, value)
 
