@@ -62,7 +62,7 @@ class _OggVorbisWrapper(_AbstractWrapper):
             else:
                 raise ValueError('Unknown item type')
         else:
-            self.__dict__[attr] = value
+            object.__setattr__(self, attr, value)
 
     def __repr__(self):
         return repr(self.audio)
@@ -106,7 +106,7 @@ class _FLACWrapper(_AbstractWrapper):
             else:
                 raise ValueError('Unknown item type')
         else:
-            self.__dict__[attr] = value
+            object.__setattr__(self, attr, value)
 
     def __repr__(self):
         return repr(self.audio)
@@ -156,7 +156,7 @@ class _MP3Wrapper(_AbstractWrapper):
             else:
                 raise ValueError('Unknown item type')
         else:
-            self.__dict__[attr] = value
+            object.__setattr__(self, attr, value)
 
     def __repr__(self):
         return repr(self.audio)
@@ -204,7 +204,7 @@ class _MP4Wrapper(_AbstractWrapper):
             else:
                 raise ValueError('Unknown item type')
         else:
-            self.__dict__[attr] = value
+            object.__setattr__(self, attr, value)
 
     def __repr__(self):
         return repr(self.audio)
@@ -224,7 +224,7 @@ def get_tags(filename):
     try:
         return _WRAPPER_MAP[extension](filename)
     except KeyError:
-        raise RuntimeError
+        raise RuntimeError('Unknown file format: %s' % extension)
 
 
 def is_audio_file(filename):
