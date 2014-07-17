@@ -1,4 +1,3 @@
-import os
 import re
 
 
@@ -27,10 +26,7 @@ def _gen_regexp_pattern(word):
 
 # noinspection PyArgumentList
 def normalize_path(path):
-    elements = path.split(os.sep)
-    for i in xrange(0, len(elements)):
-        elements[i] = normalize_string(elements[i])
-    return os.sep.join(elements)
+    return normalize_string(path)
 
 
 def normalize_string(string):
