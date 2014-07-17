@@ -12,8 +12,9 @@ class StringNormalizationTest(unittest.TestCase):
             'Emergency Broadcast :: The End is Near': 'Emergency Broadcast :: The End is Near',
         }
         self.path_test_map = {
-            '01 - The One Is The One': '01 - The One is the One',
-            '02 - The Rockafeller Skank': '02 - The Rockafeller Skank',
+            'Music\\01 - The One Is The One': 'Music\\01 - The One is the One',
+            'Music\\2\\02 - The Rockafeller Skank': 'Music\\2\\02 - The Rockafeller Skank',
+            'Music\\Bring Me The Horizon': 'Music\\Bring Me the Horizon',
         }
 
     def test_path_normalization(self):
