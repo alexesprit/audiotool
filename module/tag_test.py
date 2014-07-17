@@ -28,7 +28,7 @@ class TagWrapperTest(unittest.TestCase):
                 'title': 'Test Title',
             },
             '3': {
-                'artwork': create_artwork(COVER_EXAMPLE_PATH).data,
+                'artwork': create_artwork(COVER_EXAMPLE_PATH),
                 'artist': 'Test Artist',
                 'album': 'Test Album',
                 'title': 'Test Title',

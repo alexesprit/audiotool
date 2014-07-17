@@ -8,6 +8,9 @@ class Artwork(object):
         self.mime = mime
         self.data = data
 
+    def __eq__(self, other):
+        return self.data == other.data and self.mime == other.mime
+
 
 _MIME_MAP = {
     '.jpeg': u'image/jpeg',

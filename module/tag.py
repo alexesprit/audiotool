@@ -50,7 +50,7 @@ class _OggVorbisWrapper(_AbstractWrapper):
                 try:
                     raw_artwork_data = b64decode(self.audio['metadata_block_picture'][0])
                     picture = Picture(raw_artwork_data)
-                    return picture.data
+                    return Artwork(picture.mime, picture.data)
                 except KeyError:
                     return None
             else:
@@ -93,7 +93,8 @@ class _FLACWrapper(_AbstractWrapper):
         if attr in self.VALID_TAG_KEYS:
             if attr == 'artwork':
                 if self.audio.pictures:
-                    return self.audio.pictures[0].data
+                    picture = self.audio.pictures[0]
+                    return Artwork(picture.mime, picture.data)
                 else:
                     return None
             else:
@@ -141,10 +142,11 @@ class _MP3Wrapper(_AbstractWrapper):
         if attr in self.TAG_MAP:
             frame_id = _MP3Wrapper.TAG_MAP[attr]
             try:
+                frame = self.audio[frame_id]
                 if 'artwork' == attr:
-                    return self.audio[frame_id].data
+                    return Artwork(frame.mime, frame.data)
                 else:
-                    return self.audio[frame_id].text[0]
+                    return frame.text[0]
             except KeyError:
                 return None
         raise TagError(self, attr)
@@ -182,9 +184,13 @@ class _MP4Wrapper(_AbstractWrapper):
         'artist': '\xa9ART', 'album': '\xa9alb',
         'title': '\xa9nam', 'genre': '\xa9gen',
     }
-    COVER_FOFMAT_MAP = {
+    COVER_MIME_MAP = {
         'image/jpeg': MP4Cover.FORMAT_JPEG,
         'image/png': MP4Cover.FORMAT_PNG,
+    }
+    COVER_FORMAT_MAP = {
+        MP4Cover.FORMAT_JPEG: 'image/jpeg',
+        MP4Cover.FORMAT_PNG: 'image/png',
     }
 
     def __init__(self, filename):
@@ -195,7 +201,12 @@ class _MP4Wrapper(_AbstractWrapper):
         if attr in self.TAG_MAP:
             tag_id = _MP4Wrapper.TAG_MAP[attr]
             try:
-                return self.audio[tag_id][0]
+                tag = self.audio[tag_id][0]
+                if 'artwork' == attr:
+                    mime = _MP4Wrapper._get_mime_by_format(tag.imageformat)
+                    return Artwork(mime, tag[:])
+                else:
+                    return tag
             except KeyError:
                 return None
         raise TagError(self, attr)
@@ -204,10 +215,7 @@ class _MP4Wrapper(_AbstractWrapper):
         if attr in self.TAG_MAP:
             tag_id = _MP4Wrapper.TAG_MAP[attr]
             if isinstance(value, Artwork):
-                try:
-                    imageformat = _MP4Wrapper.COVER_FOFMAT_MAP[value.mime]
-                except:
-                    raise ValueError('Unknown image format: %s' % value.mime)
+                imageformat = _MP4Wrapper._get_format_by_mime(value.mime)
                 mp4_cover = MP4Cover(value.data, imageformat=imageformat)
                 self.audio[tag_id] = [mp4_cover]
             elif isinstance(value, basestring):
@@ -223,6 +231,19 @@ class _MP4Wrapper(_AbstractWrapper):
     def save(self):
         self.audio.save()
 
+    @staticmethod
+    def _get_format_by_mime(mime):
+        try:
+            return _MP4Wrapper.COVER_MIME_MAP[mime]
+        except:
+            raise ValueError('Unknown image MIME: %s' % mime)
+
+    @staticmethod
+    def _get_mime_by_format(imageformat):
+        try:
+            return _MP4Wrapper.COVER_FORMAT_MAP[imageformat]
+        except:
+            raise ValueError('Unknown image format: %s' % imageformat)
 
 _WRAPPER_MAP = {
     '.flac': _FLACWrapper, '.ogg': _OggVorbisWrapper,
