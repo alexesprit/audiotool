@@ -4,7 +4,7 @@ import tempfile
 import unittest
 
 from artwork import create_artwork
-from tag import get_tags, TagValueError
+from tag import get_tags, TagError, TagValueError
 
 
 AUDIO_EXAMPLES_DIR = 'audio_examples'
@@ -42,6 +42,9 @@ class TagWrapperTest(unittest.TestCase):
                 'title': 'Write Test Title',
             },
         }
+        self.read_wrong_data_map = {
+            '1': ('', '2fsda', )
+        }
         self.write_wrong_data_map = {
             '1': ('artwork', 'artist', 'album', 'title', 'genre')
         }
@@ -57,6 +60,10 @@ class TagWrapperTest(unittest.TestCase):
         self._test_write_tags(test_data)
         self._test_read_tags(test_data)
         remove_tree(temp_dir)
+
+    def test_reading_wrong_data(self):
+        test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR, self.read_wrong_data_map)
+        self._test_reading_wrong_data(test_data)
 
     def test_writing_wrong_data(self):
         test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR, self.write_wrong_data_map)
@@ -82,6 +89,15 @@ class TagWrapperTest(unittest.TestCase):
                 value = data[key]
                 setattr(tag, key, value)
             tag.save()
+
+    def _test_reading_wrong_data(self, test_data):
+        for tag, data in test_data:
+            for key in data:
+                try:
+                    getattr(tag, key)
+                    self.fail()
+                except TagError:
+                    pass
 
     def _test_writing_wrong_data(self, test_data):
         for tag, data in test_data:
