@@ -38,7 +38,7 @@ def fix_audio_tags(directory):
         try:
             tag = get_tags(filename)
         except IOError:
-            print(u'[fix_audio_tags] error: set tag for %s' % filename)
+            print(u'[fix_audio_tags]Unable to set tag for %s' % filename)
             continue
 
         changed = False
@@ -53,8 +53,11 @@ def fix_audio_tags(directory):
             print(u'[!] file updated: %s' % filename)
         new_filename = normalize_path(filename)
         if filename != new_filename:
-            os.rename(filename, new_filename)
-            print(u'[!] file renamed: %s' % filename)
+            try:
+                os.rename(filename, new_filename)
+                print(u'[!] file renamed: %s' % filename)
+            except:
+                print(u'[fix_audio_tags] Unable to rename %s' % filename)
 
 
 @keyboard_interrupt
@@ -65,8 +68,11 @@ def rename_dirs(directory):
         old_path = item
         new_path = normalize_path(old_path)
         if old_path != new_path:
-            os.rename(old_path, new_path)
-            renamed_dirs.append(old_path)
+            try:
+                os.rename(old_path, new_path)
+                renamed_dirs.append(old_path)
+            except:
+                print(u'[rename_dirs] Unable to rename %s' % old_path)
     if renamed_dirs:
         for path in renamed_dirs:
             print(u'folder renamed: %s' % path)
