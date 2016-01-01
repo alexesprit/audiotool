@@ -147,7 +147,7 @@ def attach_artworks(directory):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog='audiotool')
     parser.add_argument(dest='directory', help='Path to scanning')
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-a', dest='artwork', action='store_true', help='attach album artwork to audio files')
