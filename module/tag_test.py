@@ -50,7 +50,8 @@ class TagWrapperTest(unittest.TestCase):
         }
 
     def test_getting_tags(self):
-        test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR, self.read_test_data_map)
+        test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR,
+                                        self.read_test_data_map)
         self._test_read_tags(test_data)
 
     def test_setting_tags(self):
@@ -62,11 +63,13 @@ class TagWrapperTest(unittest.TestCase):
         remove_tree(temp_dir)
 
     def test_reading_wrong_data(self):
-        test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR, self.read_wrong_data_map)
+        test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR,
+                                        self.read_wrong_data_map)
         self._test_reading_wrong_data(test_data)
 
     def test_writing_wrong_data(self):
-        test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR, self.write_wrong_data_map)
+        test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR,
+                                        self.write_wrong_data_map)
         self._test_writing_wrong_data(test_data)
 
     def _gen_test_data(self, directory, data_map):

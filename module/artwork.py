@@ -1,6 +1,9 @@
 import os
 
-__all__ = ['Artwork', 'create_artwork', 'is_artwork_supported', 'is_artwork_file', ]
+__all__ = [
+    'Artwork', 'create_artwork',
+    'is_artwork_supported', 'is_artwork_file',
+]
 
 
 class Artwork(object):

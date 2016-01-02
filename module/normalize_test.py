@@ -9,11 +9,13 @@ class StringNormalizationTest(unittest.TestCase):
             'Periscope Up': 'Periscope Up',
             'Control The Storm': 'Control the Storm',
             'Build It Up - Tear It Down': 'Build It Up - Tear It Down',
-            'Emergency Broadcast :: The End is Near': 'Emergency Broadcast :: The End is Near',
+            'Emergency Broadcast :: The End is Near':
+            'Emergency Broadcast :: The End is Near',
         }
         self.path_test_map = {
             'Music\\01 - The One Is The One': 'Music\\01 - The One is the One',
-            'Music\\2\\02 - The Rockafeller Skank': 'Music\\2\\02 - The Rockafeller Skank',
+            'Music\\2\\02 - The Rockafeller Skank':
+            'Music\\2\\02 - The Rockafeller Skank',
             'Music\\Bring Me The Horizon': 'Music\\Bring Me the Horizon',
         }
 

@@ -150,11 +150,16 @@ def main():
     parser = argparse.ArgumentParser(prog='audiotool')
     parser.add_argument(dest='directory', help='Path to scanning')
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-a', dest='artwork', action='store_true', help='attach album artwork to audio files')
-    group.add_argument('-g', dest='genres', action='store_true', help='collect genres')
-    group.add_argument('-r', dest='rename', action='store_true', help='normalize directories names')
-    group.add_argument('-t', dest='tags', action='store_true', help='normalize audio tags')
-    group.add_argument('-u', dest='uncovered', action='store_true', help='search folders without album artwork')
+    group.add_argument('-a', dest='artwork', action='store_true',
+                       help='attach album artwork to audio files')
+    group.add_argument('-g', dest='genres', action='store_true',
+                       help='collect genres')
+    group.add_argument('-r', dest='rename', action='store_true',
+                       help='normalize directories names')
+    group.add_argument('-t', dest='tags', action='store_true',
+                       help='normalize audio tags')
+    group.add_argument('-u', dest='uncovered', action='store_true',
+                       help='search folders without album artwork')
     args = parser.parse_args()
 
     if args.tags:
