@@ -20,7 +20,8 @@ class TagValueError(ValueError):
 
 class TagError(AttributeError):
     def __init__(self, tag, attr):
-        message = u"'{0}' object has no attribute '{1}'".format(tag.__class__.__name__, attr)
+        message = u"'{0}' object has no attribute '{1}'".format(
+            tag.__class__.__name__, attr)
         AttributeError.__init__(self, message)
 
 
@@ -48,7 +49,8 @@ class _OggVorbisWrapper(_AbstractWrapper):
         if attr in self.VALID_TAG_KEYS:
             if attr == 'artwork':
                 try:
-                    raw_artwork_data = b64decode(self.audio['metadata_block_picture'][0])
+                    raw_artwork_data = b64decode(
+                        self.audio['metadata_block_picture'][0])
                     picture = Picture(raw_artwork_data)
                     return Artwork(picture.mime, picture.data)
                 except KeyError:
@@ -67,7 +69,9 @@ class _OggVorbisWrapper(_AbstractWrapper):
                 picture.type = 3
                 picture.mime = value.mime
                 picture.data = value.data
-                self.audio['metadata_block_picture'] = [b64encode(picture.write())]
+                self.audio['metadata_block_picture'] = [
+                    b64encode(picture.write())
+                ]
             elif isinstance(value, basestring):
                 self.audio[attr] = [value]
             else:
