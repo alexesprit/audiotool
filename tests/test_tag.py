@@ -3,11 +3,11 @@ import os
 import tempfile
 import unittest
 
-from artwork import create_artwork
-from tag import get_tags, TagError, TagValueError
+from module.artwork import create_artwork
+from module.tag import get_tags, TagError, TagValueError
 
 
-AUDIO_EXAMPLES_DIR = 'audio_examples'
+AUDIO_EXAMPLES_DIR = os.path.join('tests', 'audio_examples')
 COVER_EXAMPLE_PATH = os.path.join(AUDIO_EXAMPLES_DIR, 'cover.jpg')
 
 

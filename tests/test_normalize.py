@@ -1,6 +1,6 @@
 import unittest
 
-from normalize import normalize_path, normalize_string
+from module.normalize import normalize_path, normalize_string
 
 
 class StringNormalizationTest(unittest.TestCase):
@@ -20,12 +20,12 @@ class StringNormalizationTest(unittest.TestCase):
         }
 
     def test_path_normalization(self):
-        for testing, expected in self.path_test_map.iteritems():
+        for testing, expected in self.path_test_map.items():
             actual = normalize_path(testing)
             self.assertEqual(actual, expected)
 
     def test_string_normalization(self):
-        for testing, expected in self.string_test_map.iteritems():
+        for testing, expected in self.string_test_map.items():
             actual = normalize_string(testing)
             self.assertEqual(actual, expected)
 

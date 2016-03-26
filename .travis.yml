@@ -1,8 +1,9 @@
 language: python
 python:
+  - "3.3"
+  - "3.4"
   - "3.5"
 install:
   - "pip install -r requirements.txt"
 script:
-  - "python module/normalize_test.py"
-  - "python module/tag_test.py"
+  - "python -m unittest discover tests"

@@ -70,7 +70,7 @@ class _OggVorbisWrapper(_AbstractWrapper):
                 picture.mime = value.mime
                 picture.data = value.data
                 self.audio['metadata_block_picture'] = [
-                    b64encode(picture.write())
+                    b64encode(picture.write()).decode('utf-8')
                 ]
             elif isinstance(value, str):
                 self.audio[attr] = [value]
