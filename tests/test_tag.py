@@ -65,12 +65,18 @@ class TagWrapperTest(unittest.TestCase):
     def test_reading_wrong_data(self):
         test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR,
                                         self.read_wrong_data_map)
-        self._test_reading_wrong_data(test_data)
+        for tag, data in test_data:
+            for key in data:
+                with self.assertRaises(TagError):
+                    getattr(tag, key)
 
     def test_writing_wrong_data(self):
         test_data = self._gen_test_data(AUDIO_EXAMPLES_DIR,
                                         self.write_wrong_data_map)
-        self._test_writing_wrong_data(test_data)
+        for tag, data in test_data:
+            for key in data:
+                with self.assertRaises(TagValueError):
+                    setattr(tag, key, self)
 
     def _gen_test_data(self, directory, data_map):
         for fn in data_map:
@@ -92,24 +98,6 @@ class TagWrapperTest(unittest.TestCase):
                 value = data[key]
                 setattr(tag, key, value)
             tag.save()
-
-    def _test_reading_wrong_data(self, test_data):
-        for tag, data in test_data:
-            for key in data:
-                try:
-                    getattr(tag, key)
-                    self.fail()
-                except TagError:
-                    pass
-
-    def _test_writing_wrong_data(self, test_data):
-        for tag, data in test_data:
-            for key in data:
-                try:
-                    setattr(tag, key, self)
-                    self.fail()
-                except TagValueError:
-                    pass
 
 
 if '__main__' == __name__:
