@@ -6,7 +6,7 @@ from mutagen.id3 import APIC, Frames, ID3
 from mutagen.mp4 import MP4, MP4Cover
 from mutagen.oggvorbis import OggVorbis
 
-from artwork import Artwork
+from module.artwork import Artwork
 
 
 __all__ = ['get_tags', 'is_audio_file', 'is_audio_supported', ]
@@ -72,7 +72,7 @@ class _OggVorbisWrapper(_AbstractWrapper):
                 self.audio['metadata_block_picture'] = [
                     b64encode(picture.write())
                 ]
-            elif isinstance(value, basestring):
+            elif isinstance(value, str):
                 self.audio[attr] = [value]
             else:
                 raise TagValueError(value)
@@ -117,7 +117,7 @@ class _FLACWrapper(_AbstractWrapper):
                 picture.data = value.data
                 self.audio.clear_pictures()
                 self.audio.add_picture(picture)
-            elif isinstance(value, basestring):
+            elif isinstance(value, str):
                 self.audio[attr] = [value]
             else:
                 raise TagValueError(value)
@@ -165,7 +165,7 @@ class _MP3Wrapper(_AbstractWrapper):
                     self.audio.add(frame)
                 frame.data = value.data
                 frame.mime = value.mime
-            elif isinstance(value, basestring):
+            elif isinstance(value, str):
                 if not frame:
                     frame = Frames[frame_id](encoding=3)
                     self.audio.add(frame)
@@ -222,7 +222,7 @@ class _MP4Wrapper(_AbstractWrapper):
                 imageformat = _MP4Wrapper._get_format_by_mime(value.mime)
                 mp4_cover = MP4Cover(value.data, imageformat=imageformat)
                 self.audio[tag_id] = [mp4_cover]
-            elif isinstance(value, basestring):
+            elif isinstance(value, str):
                 self.audio[tag_id] = [value]
             else:
                 raise TagValueError(value)
