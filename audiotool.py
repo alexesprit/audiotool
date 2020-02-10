@@ -18,14 +18,15 @@ def keyboard_interrupt(function):
         try:
             function(*args, **kwargs)
         except KeyboardInterrupt:
-            print(u'Cancelled')
+            print('Cancelled')
 
     return wrapper
 
 
 def print_scanning(function):
     def wrapper(directory):
-        print(u'Scanning %s' % os.path.abspath(directory))
+        abs_dir_path = os.path.abspath(directory)
+        print(f'Scanning {abs_dir_path}')
         function(directory)
 
     return wrapper
@@ -38,7 +39,7 @@ def fix_audio_tags(directory):
         try:
             tag = get_tags(filename)
         except IOError:
-            print(u'[fix_audio_tags]Unable to set tag for %s' % filename)
+            print(f'[fix_audio_tags] Unable to set tag for {filename}')
             continue
 
         changed = False
@@ -50,14 +51,14 @@ def fix_audio_tags(directory):
                 changed = True
         if changed:
             tag.save()
-            print(u'[!] file updated: %s' % filename)
+            print(f'[!] file updated: {filename}')
         new_filename = normalize_path(filename)
         if filename != new_filename:
             try:
                 os.rename(filename, new_filename)
-                print(u'[!] file renamed: %s' % filename)
+                print(f'[!] file renamed: {filename}')
             except:
-                print(u'[fix_audio_tags] Unable to rename %s' % filename)
+                print(f'[fix_audio_tags] Unable to rename {filename}')
 
 
 @keyboard_interrupt
@@ -72,12 +73,12 @@ def rename_dirs(directory):
                 os.rename(old_path, new_path)
                 renamed_dirs.append(old_path)
             except:
-                print(u'[rename_dirs] Unable to rename %s' % old_path)
+                print(f'[rename_dirs] Unable to rename {old_path}')
     if renamed_dirs:
         for path in renamed_dirs:
-            print(u'folder renamed: %s' % path)
+            print(f'folder renamed: {path}')
     else:
-        print(u'Nothing is renamed')
+        print('Nothing is renamed')
 
 
 @keyboard_interrupt
@@ -92,9 +93,9 @@ def search_uncovered_dirs(directory):
             uncovered_dirs.append(item)
     if uncovered_dirs:
         for path in uncovered_dirs:
-            print(u'Uncovered: %s' % path)
+            print(f'Uncovered: {path}')
     else:
-        print(u'All directories have covers')
+        print('All directories have covers')
 
 
 @keyboard_interrupt
@@ -105,7 +106,7 @@ def collect_genres(directory):
         try:
             tag = get_tags(filename)
         except IOError:
-            print(u'[collect_genres] error: get tag from %s' % filename)
+            print(f'[collect_genres] error: get tag from {filename}')
             continue
 
         genre = tag.genre
@@ -124,7 +125,7 @@ def collect_genres(directory):
                 fd.write('\n')
             fd.write('\n')
     filepath = os.path.join(os.getcwd(), 'genres.txt')
-    print(u'genre info written to %s' % filepath)
+    print(f'[collect_genres] genre info written to {filepath}')
 
 
 @keyboard_interrupt
