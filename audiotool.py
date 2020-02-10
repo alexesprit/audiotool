@@ -4,6 +4,8 @@ import codecs
 import os
 import sys
 
+from collections import OrderedDict
+
 from module.artwork import is_artwork_file, create_artwork
 from module.normalize import normalize_path, normalize_string
 from module.paths import gen_audio_files, gen_directories
@@ -116,8 +118,10 @@ def collect_genres(directory):
             basedir = os.path.dirname(filename)
             genres[genre].append(os.path.abspath(basedir))
 
+    sorted_genres = OrderedDict(sorted(genres.items()))
+
     with codecs.open(GENRE_OUT_FILENAME, 'w', 'utf-8') as fd:
-        for genre in genres:
+        for genre in sorted_genres:
             fd.write(genre)
             fd.write('\n')
             for item in genres[genre]:
