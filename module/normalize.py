@@ -20,7 +20,7 @@ _WORDS_TO_REPLACE = (
 
 def _gen_regexp_pattern(word):
     # Don't match: [-.:_&] EXPR [(-]
-    pattern = '(?<![\-\.:_&]) %s (?![\(\-])' % word
+    pattern = '(?<![-.:_&]) %s (?![(-])' % word
     return pattern
 
 

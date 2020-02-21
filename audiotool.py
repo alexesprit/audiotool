@@ -59,7 +59,7 @@ def fix_audio_tags(directory):
             try:
                 os.rename(filename, new_filename)
                 print(f'[!] file renamed: {filename}')
-            except:
+            except Exception:
                 print(f'[fix_audio_tags] Unable to rename {filename}')
 
 
@@ -74,7 +74,7 @@ def rename_dirs(directory):
             try:
                 os.rename(old_path, new_path)
                 renamed_dirs.append(old_path)
-            except:
+            except Exception:
                 print(f'[rename_dirs] Unable to rename {old_path}')
     if renamed_dirs:
         for path in renamed_dirs:

@@ -239,15 +239,16 @@ class _MP4Wrapper(_AbstractWrapper):
     def _get_format_by_mime(mime):
         try:
             return _MP4Wrapper.COVER_MIME_MAP[mime]
-        except:
+        except Exception:
             raise ValueError('Unknown image MIME: %s' % mime)
 
     @staticmethod
     def _get_mime_by_format(imageformat):
         try:
             return _MP4Wrapper.COVER_FORMAT_MAP[imageformat]
-        except:
+        except Exception:
             raise ValueError('Unknown image format: %s' % imageformat)
+
 
 _WRAPPER_MAP = {
     '.flac': _FLACWrapper, '.ogg': _OggVorbisWrapper,
