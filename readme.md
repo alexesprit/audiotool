@@ -1,6 +1,20 @@
-[![Build Status][1]][2]
-![Lisense: GPL v2][3]
+# audiotool
 
-[1]: http://img.shields.io/travis/alexesprit/audiotool.svg?style=flat-square
-[2]: https://travis-ci.org/alexesprit/audiotool
-[3]: http://img.shields.io/badge/license-GPL_v2-red.svg?style=flat-square
+A tool for work with music collections.
+
+## Usage
+
+```
+usage: audiotool [-h] (-a | -g | -r | -t | -u) directory
+
+positional arguments:
+  directory   Path to scanning
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -a          attach album artwork to audio files
+  -g          collect genres
+  -r          normalize directories names
+  -t          normalize audio tags
+  -u          search folders without album artwork
+```
