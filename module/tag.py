@@ -1,6 +1,7 @@
 from base64 import b64decode, b64encode
 import os
 
+from mutagen import MutagenError
 from mutagen.flac import FLAC, Picture
 from mutagen.id3 import APIC, Frames, ID3
 from mutagen.mp4 import MP4, MP4Cover
@@ -23,6 +24,12 @@ class TagError(AttributeError):
         message = u"'{0}' object has no attribute '{1}'".format(
             tag.__class__.__name__, attr)
         AttributeError.__init__(self, message)
+
+
+class TagLoadError(Exception):
+    def __init__(self, value):
+        message = u'Unable to load {0} tag'.format(value)
+        Exception.__init__(self, message)
 
 
 class _AbstractWrapper(object):
@@ -140,7 +147,10 @@ class _MP3Wrapper(_AbstractWrapper):
 
     def __init__(self, filename):
         _AbstractWrapper.__init__(self)
-        self.audio = ID3(filename)
+        try:
+            self.audio = ID3(filename)
+        except MutagenError:
+            raise TagLoadError('ID3')
 
     def __getattr__(self, attr):
         if attr in self.TAG_MAP:

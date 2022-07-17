@@ -9,7 +9,7 @@ from collections import OrderedDict
 from module.artwork import is_artwork_file, create_artwork
 from module.normalize import normalize_path, normalize_string
 from module.paths import gen_audio_files, gen_directories
-from module.tag import get_tags, is_audio_file
+from module.tag import get_tags, is_audio_file, TagLoadError
 
 
 GENRE_OUT_FILENAME = 'genres.txt'
@@ -40,8 +40,8 @@ def fix_audio_tags(directory):
     for filename in gen_audio_files(directory):
         try:
             tag = get_tags(filename)
-        except IOError:
-            print(f'[fix_audio_tags] Unable to set tag for {filename}')
+        except (IOError, TagLoadError):
+            print(f'[fix_audio_tags] Unable to load tags for {filename}')
             continue
 
         changed = False
